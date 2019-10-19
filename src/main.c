@@ -50,7 +50,7 @@ bool get_item_from_counters(Player *p, Map *map) {
   assert(nearest != -1);
 
   // TODO: tune this tolerance better?
-  if (nearest_dist < 0.6f) {
+  if (nearest_dist < 0.6f && map->counter_list[nearest].item.type != IT_UNINITIALIZED) {
     p->item = map->counter_list[nearest].item;
     map->counter_list[nearest].item.type = IT_UNINITIALIZED;
     return true;
@@ -153,6 +153,10 @@ int main(void) {
 
     DrawCube(player.pos, 1.0f, 1.0f, 1.0f, MAROON);
     DrawCubeWires(player.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+    if (player.item.type) {
+      Vector3 item_pos = {player.pos.x, player.pos.y+0.6f, player.pos.z};
+      DrawCube(item_pos, 0.2f, 0.2f, 0.2f, player.item.color);
+    }
 
     DrawGrid(10, 1.0f);
 

@@ -48,7 +48,7 @@ void init_data(Map *map, GUI *gui) {
 
   add_item_to_counter(&map->counter_list[4], IT_FLASK, LIME);
   add_item_to_counter(&map->counter_list[7], IT_FLASK, PINK);
-  add_item_to_counter(&map->counter_list[8], IT_FLASK, LIME);
+  add_item_to_counter(&map->counter_list[8], IT_FLASK, RED);
 
   Ingredient list[5] = {0, 1, 1, 0, 1};
   add_card(gui, list, 2);
