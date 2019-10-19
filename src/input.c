@@ -1,25 +1,77 @@
-void up_button(Map map, Player *player, Vector3 *new_dir) {
+KeyboardKey get_key_for_player(int player_id, Button button) {
+  switch (player_id) {
+    case 0:
+      {
+        switch (button) {
+          case B_UP:
+            return KEY_W;
+          case B_RIGHT:
+            return KEY_D;
+          case B_LEFT:
+            return KEY_A;
+          case B_DOWN:
+            return KEY_S;
+          case B_ACTION:
+            return KEY_E;
+        }
+      }
+      break;
+    case 1:
+      {
+        switch (button) {
+          case B_UP:
+            return KEY_UP;
+          case B_RIGHT:
+            return KEY_RIGHT;
+          case B_LEFT:
+            return KEY_LEFT;
+          case B_DOWN:
+            return KEY_DOWN;
+          case B_ACTION:
+            return KEY_RIGHT_SHIFT;
+        }
+      }
+      break;
+    case 2:
+      {
+        // TODO: player 3?
+      }
+      break;
+    case 3:
+      {
+        // TODO: player 4?
+      }
+      break;
+  }
+  return KEY_KP_0;
+}
+
+void up_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->z -= 1.0f;
-  player->pos.z -= 0.1f;
-  if (collides_with_counters(*player, map)) player->pos.z += 0.1f;
+  map->players[player_id].pos.z -= 0.1f;
+  if (collides_with_counters(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.z += 0.1f;
 }
 
-void down_button(Map map, Player *player, Vector3 *new_dir) {
+void down_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->z += 1.0f;
-  player->pos.z += 0.1f;
-  if (collides_with_counters(*player, map)) player->pos.z -= 0.1f;
+  map->players[player_id].pos.z += 0.1f;
+  if (collides_with_counters(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.z -= 0.1f;
 }
 
-void left_button(Map map, Player *player, Vector3 *new_dir) {
+void left_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->x -= 1.0f;
-  player->pos.x -= 0.1f;
-  if (collides_with_counters(*player, map)) player->pos.x += 0.1f;
+  map->players[player_id].pos.x -= 0.1f;
+  if (collides_with_counters(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.x += 0.1f;
 }
 
-void right_button(Map map, Player *player, Vector3 *new_dir) {
+void right_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->x += 1.0f;
-  player->pos.x += 0.1f;
-  if (collides_with_counters(*player, map)) player->pos.x -= 0.1f;
+  map->players[player_id].pos.x += 0.1f;
+  if (collides_with_counters(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.x -= 0.1f;
 }
 
 void action_button(Map *map, Player *player) {
@@ -40,20 +92,26 @@ void action_button(Map *map, Player *player) {
   player->item_pickup_cooldown = PLAYER_ITEM_PICKUP_COOLDOWN;
 }
 
-void keyboard_input(Map *map, Player *player, Vector3 *new_dir) {
-  if (IsKeyDown(KEY_UP)) {
-    up_button(*map, player, new_dir);
+void keyboard_input(Map *map, int player_id) {
+  Vector3 new_dir = { 0.0f, 0.0f, 0.0f };
+
+  if (IsKeyDown(get_key_for_player(player_id, B_UP))) {
+    up_button(map, player_id, &new_dir);
   }
-  if (IsKeyDown(KEY_DOWN)) {
-    down_button(*map, player, new_dir);
+  if (IsKeyDown(get_key_for_player(player_id, B_DOWN))) {
+    down_button(map, player_id, &new_dir);
   }
-  if (IsKeyDown(KEY_LEFT)) {
-    left_button(*map, player, new_dir);
+  if (IsKeyDown(get_key_for_player(player_id, B_LEFT))) {
+    left_button(map, player_id, &new_dir);
   }
-  if (IsKeyDown(KEY_RIGHT)) {
-    right_button(*map, player, new_dir);
+  if (IsKeyDown(get_key_for_player(player_id, B_RIGHT))) {
+    right_button(map, player_id, &new_dir);
   }
-  if (IsKeyDown(KEY_Z)) {
-    action_button(map, player);
+  if (IsKeyDown(get_key_for_player(player_id, B_ACTION))) {
+    action_button(map, &map->players[player_id]);
+  }
+
+  if (Vector3Length(new_dir)) {
+    map->players[player_id].dir = Vector3Normalize(new_dir);
   }
 }

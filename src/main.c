@@ -24,93 +24,7 @@
 #include "data.h"
 #include "cards.c"
 #include "data.c"
-
-bool collides_with_counters(Player p, Map map) {
-  for (int i = 0; i < map.counter_list_size; i++) {
-    if (CheckCollisionBoxes(GET_COUNTER_BBOX(p), GET_COUNTER_BBOX(map.counter_list[i]))) {
-      return true;
-    }
-  }
-  return false;
-}
-
-int get_aimed_counter(Player *p, Map *map, float *nearest_dist) {
-  assert(nearest_dist);
-
-  Ray ray = { p->pos, p->dir };
-  Vector3 collision_point = { 0 };
-  int nearest = -1;
-  *nearest_dist = 999999.0f;
-  for (int i = 0; i < map->counter_list_size; i++) {
-    if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
-      float distance = Vector3Distance(collision_point, p->pos);
-      if (distance < *nearest_dist) {
-        nearest = i;
-        *nearest_dist = distance;
-      }
-    }
-  }
-  //printf("nearest_dist %f\n", *nearest_dist);
-  assert(nearest != -1);
-
-  return nearest;
-}
-
-bool get_item(Player *p, Map *map) {
-  // try to get it from the counter
-  {
-    float nearest_dist;
-    int nearest = get_aimed_counter(p, map, &nearest_dist);
-
-    // TODO: tune this tolerance better?
-    if (nearest_dist < 0.6f && map->counter_list[nearest].item.type) {
-      // drop item if holding any
-      if (p->item.type) {
-        map->dropped_item_list[map->dropped_item_list_size].item = p->item;
-        map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
-        map->dropped_item_list_size++;
-      }
-
-      // get new item
-      p->item = map->counter_list[nearest].item;
-      map->counter_list[nearest].item.type = IT_UNINITIALIZED;
-      return true;
-    }
-  }
-
-  // try to get it from the ground
-  {
-    int nearest = -1;
-    float nearest_dist = 999999.0f;
-    for (int i = 0; i < map->dropped_item_list_size; i++) {
-      float distance = Vector3Distance(p->pos, map->dropped_item_list[i].pos);
-      if (distance < nearest_dist) {
-        nearest = i;
-        nearest_dist = distance;
-      }
-    }
-
-    // TODO: tune this tolerance better?
-    if (nearest_dist < 0.6f) {
-      // drop item if holding any
-      if (p->item.type) {
-        map->dropped_item_list[map->dropped_item_list_size].item = p->item;
-        map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
-        map->dropped_item_list_size++;
-      }
-
-      // get new item
-      p->item = map->dropped_item_list[nearest].item;
-      map->dropped_item_list_size--;
-      for (int i = nearest; i < map->dropped_item_list_size; i++) {
-        map->dropped_item_list[i] = map->dropped_item_list[i+1];
-      }
-      return true;
-    }
-  }
-  return false;
-}
-
+#include "map.c"
 #include "input.c"
 
 int main(void) {
@@ -122,6 +36,10 @@ int main(void) {
 
   init_data(&map, &gui);
 
+  map.players[0].pos.x = -1;
+  map.players[1].pos.x = 1;
+  map.player_count = 2;
+
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
   camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
@@ -131,18 +49,13 @@ int main(void) {
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-  Player player = { 0 };
-
   while (!WindowShouldClose()) {
-    Vector3 new_dir = { 0.0f, 0.0f, 0.0f };
+    for (int i = 0; i < map.player_count; i++) {
+      keyboard_input(&map, i);
 
-    keyboard_input(&map, &player, &new_dir);
-
-    if (Vector3Length(new_dir)) {
-      player.dir = Vector3Normalize(new_dir);
-    }
-    if (player.item_pickup_cooldown >= 0) {
-      player.item_pickup_cooldown -= GetFrameTime();
+      if (map.players[i].item_pickup_cooldown >= 0) {
+        map.players[i].item_pickup_cooldown -= GetFrameTime();
+      }
     }
 
     BeginDrawing();
@@ -171,12 +84,16 @@ int main(void) {
       DrawCube(item.pos, 0.2f, 0.2f, 0.2f, item.item.color);
     }
 
-    // draw player
-    DrawCube(player.pos, 1.0f, 1.0f, 1.0f, MAROON);
-    DrawCubeWires(player.pos, 1.0f, 1.0f, 1.0f, YELLOW);
-    if (player.item.type) {
-      Vector3 item_pos = {player.pos.x, player.pos.y+0.6f, player.pos.z};
-      DrawCube(item_pos, 0.2f, 0.2f, 0.2f, player.item.color);
+    // draw players
+    for (int i = 0; i < map.player_count; i++) {
+      Player p = map.players[i];
+
+      DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
+      DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      if (p.item.type) {
+        Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, p.item.color);
+      }
     }
 
     EndMode3D();
