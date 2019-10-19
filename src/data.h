@@ -26,6 +26,21 @@ typedef struct {
   int item_list_size;
 } Map;
 
+typedef enum {
+  I_BLUE,
+  I_RED
+} Ingredient;
+
 typedef struct {
   Vector2 pos;
+
+  Ingredient ingredient_list[5];
+  int ingredient_list_len;
 } Card;
+
+typedef struct {
+  Card cards[20];
+  int cards_len;
+
+  int cards_width;
+} GUI;
