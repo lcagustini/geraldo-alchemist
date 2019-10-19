@@ -27,11 +27,15 @@ int main(void) {
 
   while (!WindowShouldClose()) {
     if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) cubePosition.z += 0.1f;
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) cubePosition.z -= 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) cubePosition.z -= 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) cubePosition.z += 0.1f;
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) cubePosition.x -= 0.1f;
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) cubePosition.x += 0.1f;
     }
+    if (IsKeyDown(KEY_UP)) cubePosition.z -= 0.1f;
+    if (IsKeyDown(KEY_DOWN)) cubePosition.z += 0.1f;
+    if (IsKeyDown(KEY_LEFT)) cubePosition.x -= 0.1f;
+    if (IsKeyDown(KEY_RIGHT)) cubePosition.x += 0.1f;
 
     BeginDrawing();
 
