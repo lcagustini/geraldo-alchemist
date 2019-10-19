@@ -19,6 +19,12 @@ typedef struct {
 } Counter;
 
 typedef struct {
+  Vector3 pos;
+  Vector3 dir;
+  Item item;
+} Player;
+
+typedef struct {
   Counter counter_list[MAX_COUNTERS];
   int counter_list_size;
 

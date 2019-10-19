@@ -1,5 +1,8 @@
+#define RAYMATH_IMPLEMENTATION
+#include <raymath.h>
 #include <raylib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -17,12 +20,39 @@
 #include "data.h"
 #include "data.c"
 
-bool collides_with_counters(Counter c, Map map) {
+bool collides_with_counters(Player p, Map map) {
   for (int i = 0; i < map.counter_list_size; i++) {
-    if (CheckCollisionBoxes(GET_COUNTER_BBOX(c), GET_COUNTER_BBOX(map.counter_list[i]))) {
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(p), GET_COUNTER_BBOX(map.counter_list[i]))) {
       return true;
     }
   }
+  return false;
+}
+
+bool get_item_from_counters(Player *p, Map *map) {
+  Ray ray = { p->pos, p->dir };
+  Vector3 collision_point = { 0 };
+  int nearest = -1;
+  float nearest_dist = 999999.0f;
+  for (int i = 0; i < map->counter_list_size; i++) {
+    if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
+      float distance = Vector3Distance(collision_point, p->pos);
+      if (distance < nearest_dist) {
+        nearest = i;
+        nearest_dist = distance;
+      }
+    }
+  }
+  //printf("nearest_dist %f\n", nearest_dist);
+  assert(nearest != -1);
+
+  // TODO: tune this tolerance better?
+  if (nearest_dist < 0.6f) {
+    p->item = map->counter_list[nearest].item;
+    map->counter_list[nearest].item.type = IT_UNINITIALIZED;
+    return true;
+  }
+
   return false;
 }
 
@@ -45,42 +75,60 @@ int main(void) {
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-  Counter player_cube = { 0 };
+  Player player = { 0 };
 
   while (!WindowShouldClose()) {
+    Vector3 new_dir = { 0.0f, 0.0f, 0.0f };
     if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-        player_cube.pos.z -= 0.1f;
-        if (collides_with_counters(player_cube, map)) player_cube.pos.z += 0.1f;
+        new_dir.z -= 1.0f;
+        player.pos.z -= 0.1f;
+        if (collides_with_counters(player, map)) player.pos.z += 0.1f;
       }
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-        player_cube.pos.z += 0.1f;
-        if (collides_with_counters(player_cube, map)) player_cube.pos.z -= 0.1f;
+        new_dir.z += 1.0f;
+        player.pos.z += 0.1f;
+        if (collides_with_counters(player, map)) player.pos.z -= 0.1f;
       }
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-        player_cube.pos.x -= 0.1f;
-        if (collides_with_counters(player_cube, map)) player_cube.pos.x += 0.1f;
+        new_dir.x -= 1.0f;
+        player.pos.x -= 0.1f;
+        if (collides_with_counters(player, map)) player.pos.x += 0.1f;
       }
       if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
-        player_cube.pos.x += 0.1f;
-        if (collides_with_counters(player_cube, map)) player_cube.pos.x -= 0.1f;
+        new_dir.x += 1.0f;
+        player.pos.x += 0.1f;
+        if (collides_with_counters(player, map)) player.pos.x -= 0.1f;
       }
     }
     if (IsKeyDown(KEY_UP)) {
-      player_cube.pos.z -= 0.1f;
-      if (collides_with_counters(player_cube, map)) player_cube.pos.z += 0.1f;
+      new_dir.z -= 1.0f;
+      player.pos.z -= 0.1f;
+      if (collides_with_counters(player, map)) player.pos.z += 0.1f;
     }
     if (IsKeyDown(KEY_DOWN)) {
-      player_cube.pos.z += 0.1f;
-      if (collides_with_counters(player_cube, map)) player_cube.pos.z -= 0.1f;
+      new_dir.z += 1.0f;
+      player.pos.z += 0.1f;
+      if (collides_with_counters(player, map)) player.pos.z -= 0.1f;
     }
     if (IsKeyDown(KEY_LEFT)) {
-      player_cube.pos.x -= 0.1f;
-      if (collides_with_counters(player_cube, map)) player_cube.pos.x += 0.1f;
+      new_dir.x -= 1.0f;
+      player.pos.x -= 0.1f;
+      if (collides_with_counters(player, map)) player.pos.x += 0.1f;
     }
     if (IsKeyDown(KEY_RIGHT)) {
-      player_cube.pos.x += 0.1f;
-      if (collides_with_counters(player_cube, map)) player_cube.pos.x -= 0.1f;
+      new_dir.x += 1.0f;
+      player.pos.x += 0.1f;
+      if (collides_with_counters(player, map)) player.pos.x -= 0.1f;
+    }
+    if (Vector3Length(new_dir)) {
+      player.dir = Vector3Normalize(new_dir);
+    }
+    // TODO: also make it work for items on the ground
+    if (IsKeyDown(KEY_Z)) { // get item from front (currently only from counters)
+      if (get_item_from_counters(&player, &map)) {
+      } else {
+      }
     }
 
     BeginDrawing();
@@ -96,12 +144,13 @@ int main(void) {
       DrawCubeWires(c.pos, 1.0f, 1.0f, 1.0f, YELLOW);
 
       if (c.item.type) {
-        DrawCube((Vector3){c.pos.x, c.pos.y+0.6f, c.pos.z}, 0.2f, 0.2f, 0.2f, c.item.color);
+        Vector3 item_pos = {c.pos.x, c.pos.y+0.6f, c.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, c.item.color);
       }
     }
 
-    DrawCube(player_cube.pos, 1.0f, 1.0f, 1.0f, MAROON);
-    DrawCubeWires(player_cube.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+    DrawCube(player.pos, 1.0f, 1.0f, 1.0f, MAROON);
+    DrawCubeWires(player.pos, 1.0f, 1.0f, 1.0f, YELLOW);
 
     DrawGrid(10, 1.0f);
 
