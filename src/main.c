@@ -34,24 +34,33 @@ bool collides_with_counters(Player p, Map map) {
   return false;
 }
 
+int get_aimed_counter(Player *p, Map *map, float *nearest_dist) {
+  assert(nearest_dist);
+
+  Ray ray = { p->pos, p->dir };
+  Vector3 collision_point = { 0 };
+  int nearest = -1;
+  *nearest_dist = 999999.0f;
+  for (int i = 0; i < map->counter_list_size; i++) {
+    if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
+      float distance = Vector3Distance(collision_point, p->pos);
+      if (distance < *nearest_dist) {
+        nearest = i;
+        *nearest_dist = distance;
+      }
+    }
+  }
+  //printf("nearest_dist %f\n", *nearest_dist);
+  assert(nearest != -1);
+
+  return nearest;
+}
+
 bool get_item(Player *p, Map *map) {
   // try to get it from the counter
   {
-    Ray ray = { p->pos, p->dir };
-    Vector3 collision_point = { 0 };
-    int nearest = -1;
-    float nearest_dist = 999999.0f;
-    for (int i = 0; i < map->counter_list_size; i++) {
-      if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
-        float distance = Vector3Distance(collision_point, p->pos);
-        if (distance < nearest_dist) {
-          nearest = i;
-          nearest_dist = distance;
-        }
-      }
-    }
-    //printf("nearest_dist %f\n", nearest_dist);
-    assert(nearest != -1);
+    float nearest_dist;
+    int nearest = get_aimed_counter(p, map, &nearest_dist);
 
     // TODO: tune this tolerance better?
     if (nearest_dist < 0.6f && map->counter_list[nearest].item.type) {
@@ -170,8 +179,13 @@ int main(void) {
       player.dir = Vector3Normalize(new_dir);
     }
     if (IsKeyDown(KEY_Z) && player.item_pickup_cooldown < 0) {
-      // drop item if holding any
-      if (!get_item(&player, &map) && player.item.type) {
+      float nearest_dist;
+      int nearest = get_aimed_counter(&player, &map, &nearest_dist);
+      if (!map.counter_list[nearest].item.type && nearest_dist < 0.6f && player.item.type) { // try to put item on the counter
+        map.counter_list[nearest].item = player.item;
+        player.item.type = IT_UNINITIALIZED;
+      }
+      else if (!get_item(&player, &map) && player.item.type) { // drop item if holding any
         map.dropped_item_list[map.dropped_item_list_size].item = player.item;
         map.dropped_item_list[map.dropped_item_list_size].pos = player.pos;
         map.dropped_item_list_size++;
