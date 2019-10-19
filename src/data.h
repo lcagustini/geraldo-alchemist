@@ -27,6 +27,7 @@ typedef struct {
   Vector3 pos;
   Vector3 dir;
   Item item;
+  float item_pickup_cooldown; // less than 0 = good to go
 } Player;
 
 typedef struct {

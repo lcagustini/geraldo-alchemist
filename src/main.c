@@ -12,6 +12,8 @@
 #define INGREDIENT_CARD_SIZE CARD_SIZE/2
 #define CARD_PADDING 5
 
+#define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
+
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
                                                     (a).pos.z - 0.5f},\
@@ -32,40 +34,70 @@ bool collides_with_counters(Player p, Map map) {
   return false;
 }
 
-bool get_item_from_counters(Player *p, Map *map) {
-  Ray ray = { p->pos, p->dir };
-  Vector3 collision_point = { 0 };
-  int nearest = -1;
-  float nearest_dist = 999999.0f;
-  for (int i = 0; i < map->counter_list_size; i++) {
-    if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
-      float distance = Vector3Distance(collision_point, p->pos);
+void get_item(Player *p, Map *map) {
+  // try to get it from the counter
+  {
+    Ray ray = { p->pos, p->dir };
+    Vector3 collision_point = { 0 };
+    int nearest = -1;
+    float nearest_dist = 999999.0f;
+    for (int i = 0; i < map->counter_list_size; i++) {
+      if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
+        float distance = Vector3Distance(collision_point, p->pos);
+        if (distance < nearest_dist) {
+          nearest = i;
+          nearest_dist = distance;
+        }
+      }
+    }
+    //printf("nearest_dist %f\n", nearest_dist);
+    assert(nearest != -1);
+
+    // TODO: tune this tolerance better?
+    if (nearest_dist < 0.6f && map->counter_list[nearest].item.type) {
+      // drop item if holding any
+      if (p->item.type) {
+        map->dropped_item_list[map->dropped_item_list_size].item = p->item;
+        map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
+        map->dropped_item_list_size++;
+      }
+
+      // get new item
+      p->item = map->counter_list[nearest].item;
+      map->counter_list[nearest].item.type = IT_UNINITIALIZED;
+      return;
+    }
+  }
+
+  // try to get it from the ground
+  {
+    int nearest = -1;
+    float nearest_dist = 999999.0f;
+    for (int i = 0; i < map->dropped_item_list_size; i++) {
+      float distance = Vector3Distance(p->pos, map->dropped_item_list[i].pos);
       if (distance < nearest_dist) {
         nearest = i;
         nearest_dist = distance;
       }
     }
-  }
-  //printf("nearest_dist %f\n", nearest_dist);
-  assert(nearest != -1);
 
-  // TODO: tune this tolerance better?
-  if (nearest_dist < 0.6f && map->counter_list[nearest].item.type) {
-    // drop item if holding any
-    if (p->item.type) {
-      map->dropped_item_list[map->dropped_item_list_size].item = p->item;
-      map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
-      map->dropped_item_list_size++;
+    // TODO: tune this tolerance better?
+    if (nearest_dist < 0.6f) {
+      // drop item if holding any
+      if (p->item.type) {
+        map->dropped_item_list[map->dropped_item_list_size].item = p->item;
+        map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
+        map->dropped_item_list_size++;
+      }
+
+      // get new item
+      p->item = map->dropped_item_list[nearest].item;
+      map->dropped_item_list_size--;
+      for (int i = nearest; i < map->dropped_item_list_size; i++) {
+        map->dropped_item_list[i] = map->dropped_item_list[i+1];
+      }
     }
-
-    // get new item
-    p->item = map->counter_list[nearest].item;
-    map->counter_list[nearest].item.type = IT_UNINITIALIZED;
-
-    return true;
   }
-
-  return false;
 }
 
 int main(void) {
@@ -135,11 +167,12 @@ int main(void) {
     if (Vector3Length(new_dir)) {
       player.dir = Vector3Normalize(new_dir);
     }
-    // TODO: also make it work for items on the ground
-    if (IsKeyDown(KEY_Z)) { // get item from front (currently only from counters)
-      if (get_item_from_counters(&player, &map)) {
-      } else {
-      }
+    if (IsKeyDown(KEY_Z) && player.item_pickup_cooldown < 0) {
+      get_item(&player, &map);
+      player.item_pickup_cooldown = PLAYER_ITEM_PICKUP_COOLDOWN;
+    }
+    if (player.item_pickup_cooldown >= 0) {
+      player.item_pickup_cooldown -= GetFrameTime();
     }
 
     BeginDrawing();
