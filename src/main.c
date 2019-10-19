@@ -5,8 +5,8 @@
 #include <assert.h>
 #include <string.h>
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 
 #define CARD_SIZE 50
 #define INGREDIENT_CARD_SIZE CARD_SIZE/2
@@ -111,6 +111,8 @@ bool get_item(Player *p, Map *map) {
   return false;
 }
 
+#include "input.c"
+
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
@@ -133,65 +135,11 @@ int main(void) {
 
   while (!WindowShouldClose()) {
     Vector3 new_dir = { 0.0f, 0.0f, 0.0f };
-    if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-        new_dir.z -= 1.0f;
-        player.pos.z -= 0.1f;
-        if (collides_with_counters(player, map)) player.pos.z += 0.1f;
-      }
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-        new_dir.z += 1.0f;
-        player.pos.z += 0.1f;
-        if (collides_with_counters(player, map)) player.pos.z -= 0.1f;
-      }
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-        new_dir.x -= 1.0f;
-        player.pos.x -= 0.1f;
-        if (collides_with_counters(player, map)) player.pos.x += 0.1f;
-      }
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
-        new_dir.x += 1.0f;
-        player.pos.x += 0.1f;
-        if (collides_with_counters(player, map)) player.pos.x -= 0.1f;
-      }
-    }
-    if (IsKeyDown(KEY_UP)) {
-      new_dir.z -= 1.0f;
-      player.pos.z -= 0.1f;
-      if (collides_with_counters(player, map)) player.pos.z += 0.1f;
-    }
-    if (IsKeyDown(KEY_DOWN)) {
-      new_dir.z += 1.0f;
-      player.pos.z += 0.1f;
-      if (collides_with_counters(player, map)) player.pos.z -= 0.1f;
-    }
-    if (IsKeyDown(KEY_LEFT)) {
-      new_dir.x -= 1.0f;
-      player.pos.x -= 0.1f;
-      if (collides_with_counters(player, map)) player.pos.x += 0.1f;
-    }
-    if (IsKeyDown(KEY_RIGHT)) {
-      new_dir.x += 1.0f;
-      player.pos.x += 0.1f;
-      if (collides_with_counters(player, map)) player.pos.x -= 0.1f;
-    }
+
+    keyboard_input(&map, &player, &new_dir);
+
     if (Vector3Length(new_dir)) {
       player.dir = Vector3Normalize(new_dir);
-    }
-    if (IsKeyDown(KEY_Z) && player.item_pickup_cooldown < 0) {
-      float nearest_dist;
-      int nearest = get_aimed_counter(&player, &map, &nearest_dist);
-      if (!map.counter_list[nearest].item.type && nearest_dist < 0.6f && player.item.type) { // try to put item on the counter
-        map.counter_list[nearest].item = player.item;
-        player.item.type = IT_UNINITIALIZED;
-      }
-      else if (!get_item(&player, &map) && player.item.type) { // drop item if holding any
-        map.dropped_item_list[map.dropped_item_list_size].item = player.item;
-        map.dropped_item_list[map.dropped_item_list_size].pos = player.pos;
-        map.dropped_item_list_size++;
-        player.item.type = IT_UNINITIALIZED;
-      }
-      player.item_pickup_cooldown = PLAYER_ITEM_PICKUP_COOLDOWN;
     }
     if (player.item_pickup_cooldown >= 0) {
       player.item_pickup_cooldown -= GetFrameTime();
@@ -230,8 +178,6 @@ int main(void) {
       Vector3 item_pos = {player.pos.x, player.pos.y+0.6f, player.pos.z};
       DrawCube(item_pos, 0.2f, 0.2f, 0.2f, player.item.color);
     }
-
-    DrawGrid(10, 1.0f);
 
     EndMode3D();
 
