@@ -1,6 +1,10 @@
-void add_cube(Map *map, float x, float z) {
+void add_counter(Map *map, float x, float z, Vector3 dir) {
   map->counter_list[map->counter_list_size].item.type = IT_UNINITIALIZED;
   map->counter_list[map->counter_list_size].pos = (Vector3){ x, 0.0f, z };
+  map->counter_list[map->counter_list_size].dir = dir;
+  map->counter_list[map->counter_list_size].model = global_counter_model;
+  float angle = atan2f(-dir.z, dir.x);
+  map->counter_list[map->counter_list_size].model.transform = MatrixRotate((Vector3){0,1,0}, angle);
   map->counter_list_size++;
 }
 
@@ -10,41 +14,47 @@ void add_item_to_counter(Counter *c, ItemType it, Color color) {
 }
 
 void init_data(Map *map, GUI *gui) {
-  add_cube(map, -5.0, -3.0);
-  add_cube(map, -5.0, -2.0);
-  add_cube(map, -5.0, -1.0);
-  add_cube(map, -5.0, 0.0);
-  add_cube(map, -5.0, 1.0);
-  add_cube(map, -5.0, 2.0);
-  add_cube(map, -5.0, 3.0);
+  Vector3 dir;
 
-  add_cube(map, -4.0, -3.0);
-  add_cube(map, -3.0, -3.0);
-  add_cube(map, -2.0, -3.0);
-  add_cube(map, -1.0, -3.0);
-  add_cube(map, 0.0, -3.0);
-  add_cube(map, 1.0, -3.0);
-  add_cube(map, 2.0, -3.0);
-  add_cube(map, 3.0, -3.0);
-  add_cube(map, 4.0, -3.0);
+  dir = (Vector3){ 1.0f, 0.0f, 0.0f };
+  add_counter(map, -5.0, -3.0, dir);
+  add_counter(map, -5.0, -2.0, dir);
+  add_counter(map, -5.0, -1.0, dir);
+  add_counter(map, -5.0, 0.0, dir);
+  add_counter(map, -5.0, 1.0, dir);
+  add_counter(map, -5.0, 2.0, dir);
+  add_counter(map, -5.0, 3.0, dir);
 
-  add_cube(map, 5.0, -3.0);
-  add_cube(map, 5.0, -2.0);
-  add_cube(map, 5.0, -1.0);
-  add_cube(map, 5.0, 0.0);
-  add_cube(map, 5.0, 1.0);
-  add_cube(map, 5.0, 2.0);
-  add_cube(map, 5.0, 3.0);
+  dir = (Vector3){ 0.0f, 0.0f, 1.0f };
+  add_counter(map, -4.0, -3.0, dir);
+  add_counter(map, -3.0, -3.0, dir);
+  add_counter(map, -2.0, -3.0, dir);
+  add_counter(map, -1.0, -3.0, dir);
+  add_counter(map, 0.0, -3.0, dir);
+  add_counter(map, 1.0, -3.0, dir);
+  add_counter(map, 2.0, -3.0, dir);
+  add_counter(map, 3.0, -3.0, dir);
+  add_counter(map, 4.0, -3.0, dir);
 
-  add_cube(map, -4.0, 3.0);
-  add_cube(map, -3.0, 3.0);
-  add_cube(map, -2.0, 3.0);
-  add_cube(map, -1.0, 3.0);
-  add_cube(map, 0.0, 3.0);
-  add_cube(map, 1.0, 3.0);
-  add_cube(map, 2.0, 3.0);
-  add_cube(map, 3.0, 3.0);
-  add_cube(map, 4.0, 3.0);
+  dir = (Vector3){ -1.0f, 0.0f, 0.0f };
+  add_counter(map, 5.0, -3.0, dir);
+  add_counter(map, 5.0, -2.0, dir);
+  add_counter(map, 5.0, -1.0, dir);
+  add_counter(map, 5.0, 0.0, dir);
+  add_counter(map, 5.0, 1.0, dir);
+  add_counter(map, 5.0, 2.0, dir);
+  add_counter(map, 5.0, 3.0, dir);
+
+  dir = (Vector3){ 0.0f, 0.0f, -1.0f };
+  add_counter(map, -4.0, 3.0, dir);
+  add_counter(map, -3.0, 3.0, dir);
+  add_counter(map, -2.0, 3.0, dir);
+  add_counter(map, -1.0, 3.0, dir);
+  add_counter(map, 0.0, 3.0, dir);
+  add_counter(map, 1.0, 3.0, dir);
+  add_counter(map, 2.0, 3.0, dir);
+  add_counter(map, 3.0, 3.0, dir);
+  add_counter(map, 4.0, 3.0, dir);
 
   add_item_to_counter(&map->counter_list[4], IT_FLASK, LIME);
   add_item_to_counter(&map->counter_list[7], IT_FLASK, PINK);

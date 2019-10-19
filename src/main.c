@@ -22,6 +22,9 @@
                                                     (a).pos.z + 0.5f}}\
 
 #include "data.h"
+
+Model global_counter_model;
+
 #include "cards.c"
 #include "data.c"
 
@@ -114,6 +117,14 @@ bool get_item(Player *p, Map *map) {
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
+  global_counter_model = LoadModel("assets/balcao.obj"); 
+  //Model global_counter_model = LoadModel("assets/balcao.iqm"); 
+  Texture2D texture = LoadTexture("assets/balcao_text.png");
+  for (int i = 0; i < global_counter_model.materialCount; i++) {
+    SetMaterialTexture(&global_counter_model.materials[i], MAP_DIFFUSE, texture);
+    GenTextureMipmaps(&global_counter_model.materials[i].maps[MAP_DIFFUSE].texture);
+  }
+
   Map map = { 0 };
 
   GUI gui = {0};
@@ -199,7 +210,7 @@ int main(void) {
 
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
+    ClearBackground(GRAY);
 
     BeginMode3D(camera);
 
@@ -207,8 +218,7 @@ int main(void) {
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
-      DrawCube(c.pos, 1.0f, 1.0f, 1.0f, MAROON);
-      DrawCubeWires(c.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      DrawModel(c.model, c.pos, 1.0f, WHITE);
 
       if (c.item.type) {
         Vector3 item_pos = {c.pos.x, c.pos.y+0.6f, c.pos.z};
@@ -219,7 +229,6 @@ int main(void) {
     // draw dropped items
     for (int i = 0; i < map.dropped_item_list_size; i++) {
       DroppedItem item = map.dropped_item_list[i];
-
       DrawCube(item.pos, 0.2f, 0.2f, 0.2f, item.item.color);
     }
 
