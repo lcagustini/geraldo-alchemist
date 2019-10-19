@@ -203,6 +203,7 @@ int main(void) {
 
     BeginMode3D(camera);
 
+    // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
@@ -215,13 +216,14 @@ int main(void) {
       }
     }
 
+    // draw dropped items
     for (int i = 0; i < map.dropped_item_list_size; i++) {
       DroppedItem item = map.dropped_item_list[i];
 
       DrawCube(item.pos, 0.2f, 0.2f, 0.2f, item.item.color);
     }
 
-
+    // draw player
     DrawCube(player.pos, 1.0f, 1.0f, 1.0f, MAROON);
     DrawCubeWires(player.pos, 1.0f, 1.0f, 1.0f, YELLOW);
     if (player.item.type) {
@@ -233,6 +235,7 @@ int main(void) {
 
     EndMode3D();
 
+    // draw GUI
     for (int i = 0; i < gui.cards_len; i++) {
       Rectangle card = {
         gui.cards[i].pos.x,
