@@ -5,6 +5,9 @@
 
 #define MAX_COUNTERS 50
 
+#include "data.h"
+#include "data.c"
+
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
