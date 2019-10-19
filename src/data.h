@@ -7,3 +7,6 @@ typedef struct {
   int counter_list_size;
 } Map;
 
+typedef struct {
+  Vector2 pos;
+} Card;
