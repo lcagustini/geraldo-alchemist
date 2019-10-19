@@ -38,6 +38,9 @@ typedef struct {
 
   DroppedItem dropped_item_list[MAX_ITEMS];
   int dropped_item_list_size;
+
+  Player players[4];
+  int player_count;
 } Map;
 
 typedef struct {
@@ -53,3 +56,11 @@ typedef struct {
 
   int cards_width;
 } GUI;
+
+typedef enum {
+  B_UP,
+  B_RIGHT,
+  B_LEFT,
+  B_DOWN,
+  B_ACTION
+} Button;
