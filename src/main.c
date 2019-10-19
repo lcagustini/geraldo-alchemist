@@ -5,8 +5,24 @@
 
 #define MAX_COUNTERS 50
 
+#define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
+                                                    (a).pos.y - 0.5f, \
+                                                    (a).pos.z - 0.5f},\
+                                          (Vector3){(a).pos.x + 0.5f, \
+                                                    (a).pos.y + 0.5f, \
+                                                    (a).pos.z + 0.5f}}\
+
 #include "data.h"
 #include "data.c"
+
+bool collides_with_counters(Counter c, Map map) {
+  for (int i = 0; i < map.counter_list_size; i++) {
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(c), GET_COUNTER_BBOX(map.counter_list[i]))) {
+      return true;
+    }
+  }
+  return false;
+}
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
@@ -23,19 +39,43 @@ int main(void) {
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-  Vector3 cubePosition = {0.0f, 0.0f, 0.0f};
+  Counter player_cube = { 0 };
 
   while (!WindowShouldClose()) {
     if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) cubePosition.z -= 0.1f;
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) cubePosition.z += 0.1f;
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) cubePosition.x -= 0.1f;
-      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) cubePosition.x += 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
+        player_cube.pos.z -= 0.1f;
+        if (collides_with_counters(player_cube, map)) player_cube.pos.z += 0.1f;
+      }
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
+        player_cube.pos.z += 0.1f;
+        if (collides_with_counters(player_cube, map)) player_cube.pos.z -= 0.1f;
+      }
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
+        player_cube.pos.x -= 0.1f;
+        if (collides_with_counters(player_cube, map)) player_cube.pos.x += 0.1f;
+      }
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
+        player_cube.pos.x += 0.1f;
+        if (collides_with_counters(player_cube, map)) player_cube.pos.x -= 0.1f;
+      }
     }
-    if (IsKeyDown(KEY_UP)) cubePosition.z -= 0.1f;
-    if (IsKeyDown(KEY_DOWN)) cubePosition.z += 0.1f;
-    if (IsKeyDown(KEY_LEFT)) cubePosition.x -= 0.1f;
-    if (IsKeyDown(KEY_RIGHT)) cubePosition.x += 0.1f;
+    if (IsKeyDown(KEY_UP)) {
+      player_cube.pos.z -= 0.1f;
+      if (collides_with_counters(player_cube, map)) player_cube.pos.z += 0.1f;
+    }
+    if (IsKeyDown(KEY_DOWN)) {
+      player_cube.pos.z += 0.1f;
+      if (collides_with_counters(player_cube, map)) player_cube.pos.z -= 0.1f;
+    }
+    if (IsKeyDown(KEY_LEFT)) {
+      player_cube.pos.x -= 0.1f;
+      if (collides_with_counters(player_cube, map)) player_cube.pos.x += 0.1f;
+    }
+    if (IsKeyDown(KEY_RIGHT)) {
+      player_cube.pos.x += 0.1f;
+      if (collides_with_counters(player_cube, map)) player_cube.pos.x -= 0.1f;
+    }
 
     BeginDrawing();
 
@@ -48,8 +88,8 @@ int main(void) {
       DrawCubeWires(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, YELLOW);
     }
 
-    DrawCube(cubePosition, 1.0f, 1.0f, 1.0f, MAROON);
-    DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, YELLOW);
+    DrawCube(player_cube.pos, 1.0f, 1.0f, 1.0f, MAROON);
+    DrawCubeWires(player_cube.pos, 1.0f, 1.0f, 1.0f, YELLOW);
 
     DrawGrid(10, 1.0f);
 
