@@ -34,7 +34,7 @@ bool collides_with_counters(Player p, Map map) {
   return false;
 }
 
-void get_item(Player *p, Map *map) {
+bool get_item(Player *p, Map *map) {
   // try to get it from the counter
   {
     Ray ray = { p->pos, p->dir };
@@ -65,7 +65,7 @@ void get_item(Player *p, Map *map) {
       // get new item
       p->item = map->counter_list[nearest].item;
       map->counter_list[nearest].item.type = IT_UNINITIALIZED;
-      return;
+      return true;
     }
   }
 
@@ -96,8 +96,10 @@ void get_item(Player *p, Map *map) {
       for (int i = nearest; i < map->dropped_item_list_size; i++) {
         map->dropped_item_list[i] = map->dropped_item_list[i+1];
       }
+      return true;
     }
   }
+  return false;
 }
 
 int main(void) {
@@ -168,7 +170,13 @@ int main(void) {
       player.dir = Vector3Normalize(new_dir);
     }
     if (IsKeyDown(KEY_Z) && player.item_pickup_cooldown < 0) {
-      get_item(&player, &map);
+      // drop item if holding any
+      if (!get_item(&player, &map) && player.item.type) {
+        map.dropped_item_list[map.dropped_item_list_size].item = player.item;
+        map.dropped_item_list[map.dropped_item_list_size].pos = player.pos;
+        map.dropped_item_list_size++;
+        player.item.type = IT_UNINITIALIZED;
+      }
       player.item_pickup_cooldown = PLAYER_ITEM_PICKUP_COOLDOWN;
     }
     if (player.item_pickup_cooldown >= 0) {
