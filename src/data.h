@@ -14,6 +14,11 @@ typedef struct {
 } Item;
 
 typedef struct {
+  Item item;
+  Vector3 pos;
+} DroppedItem;
+
+typedef struct {
   Vector3 pos;
   Item item;
 } Counter;
@@ -28,8 +33,8 @@ typedef struct {
   Counter counter_list[MAX_COUNTERS];
   int counter_list_size;
 
-  Item item_list[MAX_ITEMS];
-  int item_list_size;
+  DroppedItem dropped_item_list[MAX_ITEMS];
+  int dropped_item_list_size;
 } Map;
 
 typedef enum {

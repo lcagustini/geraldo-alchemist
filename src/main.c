@@ -50,9 +50,18 @@ bool get_item_from_counters(Player *p, Map *map) {
   assert(nearest != -1);
 
   // TODO: tune this tolerance better?
-  if (nearest_dist < 0.6f && map->counter_list[nearest].item.type != IT_UNINITIALIZED) {
+  if (nearest_dist < 0.6f && map->counter_list[nearest].item.type) {
+    // drop item if holding any
+    if (p->item.type) {
+      map->dropped_item_list[map->dropped_item_list_size].item = p->item;
+      map->dropped_item_list[map->dropped_item_list_size].pos = p->pos;
+      map->dropped_item_list_size++;
+    }
+
+    // get new item
     p->item = map->counter_list[nearest].item;
     map->counter_list[nearest].item.type = IT_UNINITIALIZED;
+
     return true;
   }
 
@@ -150,6 +159,13 @@ int main(void) {
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, c.item.color);
       }
     }
+
+    for (int i = 0; i < map.dropped_item_list_size; i++) {
+      DroppedItem item = map.dropped_item_list[i];
+
+      DrawCube(item.pos, 0.2f, 0.2f, 0.2f, item.item.color);
+    }
+
 
     DrawCube(player.pos, 1.0f, 1.0f, 1.0f, MAROON);
     DrawCubeWires(player.pos, 1.0f, 1.0f, 1.0f, YELLOW);
