@@ -3,8 +3,6 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-#define MAX_COUNTERS 50
-
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
                                                     (a).pos.z - 0.5f},\
@@ -84,8 +82,14 @@ int main(void) {
     BeginMode3D(camera);
 
     for (int i = 0; i < map.counter_list_size; i++) {
-      DrawCube(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, MAROON);
-      DrawCubeWires(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      Counter c = map.counter_list[i];
+
+      DrawCube(c.pos, 1.0f, 1.0f, 1.0f, MAROON);
+      DrawCubeWires(c.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+
+      if (c.item.type) {
+        DrawCube((Vector3){c.pos.x, c.pos.y+0.6f, c.pos.z}, 0.2f, 0.2f, 0.2f, c.item.color);
+      }
     }
 
     DrawCube(player_cube.pos, 1.0f, 1.0f, 1.0f, MAROON);
