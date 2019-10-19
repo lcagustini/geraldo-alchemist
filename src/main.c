@@ -1,12 +1,14 @@
 #define RAYMATH_IMPLEMENTATION
 #include <raymath.h>
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 #include <raylib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 768
+#define SCREEN_WIDTH 1600
+#define SCREEN_HEIGHT 900
 
 #define CARD_SIZE 50
 #define INGREDIENT_CARD_SIZE CARD_SIZE/2
@@ -21,6 +23,8 @@
                                                     (a).pos.y + 0.5f, \
                                                     (a).pos.z + 0.5f}}\
 
+#define GLSL_VERSION 330
+
 #include "data.h"
 
 Model global_counter_model;
@@ -31,15 +35,25 @@ Model global_counter_model;
 #include "input.c"
 
 int main(void) {
+  SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
   global_counter_model = LoadModel("assets/balcao.obj"); 
   //Model global_counter_model = LoadModel("assets/balcao.iqm"); 
   Texture2D texture = LoadTexture("assets/balcao_text.png");
-  for (int i = 0; i < global_counter_model.materialCount; i++) {
-    SetMaterialTexture(&global_counter_model.materials[i], MAP_DIFFUSE, texture);
-    GenTextureMipmaps(&global_counter_model.materials[i].maps[MAP_DIFFUSE].texture);
-  }
+  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE, texture);
+  GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+
+  Shader shader = LoadShader("src/lighting.vs", "src/lighting.fs");
+  shader.locs[LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
+  shader.locs[LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
+  int ambientLoc = GetShaderLocation(shader, "ambient");
+  SetShaderValue(shader, ambientLoc, (float[4]){ 0.3f, 0.3f, 0.3f, 1.0f }, UNIFORM_VEC4);
+  global_counter_model.materials[0].shader = shader;
+
+  CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
+
 
   Map map = { 0 };
 
@@ -59,6 +73,7 @@ int main(void) {
   camera.type = CAMERA_PERSPECTIVE;                   // Camera mode type
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
 
   while (!WindowShouldClose()) {
     for (int i = 0; i < map.player_count; i++) {

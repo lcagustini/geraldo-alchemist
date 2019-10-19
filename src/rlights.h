@@ -11,7 +11,7 @@
 *
 *   LICENSE: zlib/libpng
 *
-*   Copyright (c) 2017 Victor Fisac and Ramon Santamaria
+*   Copyright (c) 2017-2019 Victor Fisac (@victorfisac) and Ramon Santamaria (@raysan5)
 *
 *   This software is provided "as-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.
@@ -33,29 +33,24 @@
 #ifndef RLIGHTS_H
 #define RLIGHTS_H
 
-#include "raylib.h"
-
 //----------------------------------------------------------------------------------
 // Defines and Macros
 //----------------------------------------------------------------------------------
-#define         MAX_LIGHTS            4         // Max lights supported by shader
-#define         LIGHT_DISTANCE        3.5f      // Light distance from world center
-#define         LIGHT_HEIGHT          1.0f      // Light height position
+#define         MAX_LIGHTS            4         // Max dynamic lights supported by shader
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum {
-    LIGHT_DIRECTIONAL,
-    LIGHT_POINT
-} LightType;
 
-typedef struct {
-    bool enabled;
-    LightType type;
+// Light data
+typedef struct {   
+    int type;
     Vector3 position;
     Vector3 target;
     Color color;
+    bool enabled;
+    
+    // Shader locations
     int enabledLoc;
     int typeLoc;
     int posLoc;
@@ -63,15 +58,27 @@ typedef struct {
     int colorLoc;
 } Light;
 
+// Light type
+typedef enum {
+    LIGHT_DIRECTIONAL,
+    LIGHT_POINT
+} LightType;
+
 #ifdef __cplusplus
 extern "C" {            // Prevents name mangling of functions
 #endif
 
 //----------------------------------------------------------------------------------
+// Global Variables Definition
+//----------------------------------------------------------------------------------
+int lightsCount = 0;    // Current amount of created lights
+
+//----------------------------------------------------------------------------------
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
-void CreateLight(int type, Vector3 pos, Vector3 targ, Color color, Shader shader);         // Defines a light and get locations from PBR shader
-void UpdateLightValues(Shader shader, Light light);                                        // Send to PBR shader light values
+Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shader shader);   // Create a light and get shader locations
+void UpdateLightValues(Shader shader, Light light);         // Send light properties to shader
+//void InitLightLocations(Shader shader, Light *light);     // Init light shader locations
 
 #ifdef __cplusplus
 }
@@ -103,8 +110,7 @@ void UpdateLightValues(Shader shader, Light light);                             
 //----------------------------------------------------------------------------------
 // Global Variables Definition
 //----------------------------------------------------------------------------------
-static Light lights[MAX_LIGHTS] = { 0 };
-static int lightsCount = 0;    // Current amount of created lights
+// ...
 
 //----------------------------------------------------------------------------------
 // Module specific Functions Declaration
@@ -115,8 +121,8 @@ static int lightsCount = 0;    // Current amount of created lights
 // Module Functions Definition
 //----------------------------------------------------------------------------------
 
-// Defines a light and get locations from PBR shader
-void CreateLight(int type, Vector3 pos, Vector3 targ, Color color, Shader shader)
+// Create a light and get shader locations
+Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shader shader)
 {
     Light light = { 0 };
 
@@ -124,10 +130,13 @@ void CreateLight(int type, Vector3 pos, Vector3 targ, Color color, Shader shader
     {
         light.enabled = true;
         light.type = type;
-        light.position = pos;
-        light.target = targ;
+        light.position = position;
+        light.target = target;
         light.color = color;
 
+        // TODO: Below code doesn't look good to me, 
+        // it assumes a specific shader naming and structure
+        // Probably this implementation could be improved
         char enabledName[32] = "lights[x].enabled\0";
         char typeName[32] = "lights[x].type\0";
         char posName[32] = "lights[x].position\0";
@@ -146,13 +155,15 @@ void CreateLight(int type, Vector3 pos, Vector3 targ, Color color, Shader shader
         light.colorLoc = GetShaderLocation(shader, colorName);
 
         UpdateLightValues(shader, light);
-
-        lights[lightsCount] = light;
+        
         lightsCount++;
     }
+
+    return light;
 }
 
-// Send to PBR shader light values
+// Send light properties to shader
+// NOTE: Light shader locations should be available 
 void UpdateLightValues(Shader shader, Light light)
 {
     // Send to shader light enabled state and type
@@ -168,8 +179,9 @@ void UpdateLightValues(Shader shader, Light light)
     SetShaderValue(shader, light.targetLoc, target, UNIFORM_VEC3);
 
     // Send to shader light color values
-    float diff[4] = { (float)light.color.r/(float)255, (float)light.color.g/(float)255, (float)light.color.b/(float)255, (float)light.color.a/(float)255 };
-    SetShaderValue(shader, light.colorLoc, diff, UNIFORM_VEC4);
+    float color[4] = { (float)light.color.r/(float)255, (float)light.color.g/(float)255, 
+                       (float)light.color.b/(float)255, (float)light.color.a/(float)255 };
+    SetShaderValue(shader, light.colorLoc, color, UNIFORM_VEC4);
 }
 
 #endif // RLIGHTS_IMPLEMENTATION
