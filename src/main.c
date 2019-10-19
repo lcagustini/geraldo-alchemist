@@ -5,6 +5,9 @@
 
 #define MAX_COUNTERS 50
 
+#include "data.h"
+#include "data.c"
+
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
@@ -19,6 +22,8 @@ int main(void) {
   camera.type = CAMERA_PERSPECTIVE;                   // Camera mode type
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+  Vector3 cubePosition = {0.0f, 0.0f, 0.0f};
 
   while (!WindowShouldClose()) {
     if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
@@ -38,6 +43,9 @@ int main(void) {
       DrawCube(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, MAROON);
       DrawCubeWires(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, YELLOW);
     }
+
+    DrawCube(cubePosition, 1.0f, 1.0f, 1.0f, MAROON);
+    DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, YELLOW);
 
     DrawGrid(10, 1.0f);
 
