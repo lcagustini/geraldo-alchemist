@@ -3,8 +3,13 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+#define MAX_COUNTERS 50
+
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+
+  Map map = { 0 };
+  init_data(&map);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -12,8 +17,6 @@ int main(void) {
   camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;                                // Camera field-of-view Y
   camera.type = CAMERA_PERSPECTIVE;                   // Camera mode type
-
-  Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
@@ -31,8 +34,10 @@ int main(void) {
 
     BeginMode3D(camera);
 
-    DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-    DrawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, MAROON);
+    for (int i = 0; i < map.counter_list_size; i++) {
+      DrawCube(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, MAROON);
+      DrawCubeWires(map.counter_list[i].pos, 1.0f, 1.0f, 1.0f, YELLOW);
+    }
 
     DrawGrid(10, 1.0f);
 
