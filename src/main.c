@@ -1,7 +1,11 @@
 #include <raylib.h>
+#include <stdio.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
+
+#define CARD_SIZE 50
+#define CARD_PADDING 5
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
@@ -26,7 +30,11 @@ int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
   Map map = { 0 };
-  init_data(&map);
+
+  Card current_cards[20] = {0};
+  int current_cards_len = 0;
+
+  init_data(&map, current_cards, &current_cards_len);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -99,7 +107,15 @@ int main(void) {
 
     EndMode3D();
 
-    DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
+    for (int i = 0; i < current_cards_len; i++) {
+      Rectangle card = {
+        current_cards[i].pos.x,
+        current_cards[i].pos.y,
+        50, 50
+      };
+      DrawRectangleRounded(card, 0.2f, 0, WHITE);
+      DrawRectangleRoundedLines(card, 0.2f, 0, 1, BLACK);
+    }
 
     DrawFPS(10, 10);
 

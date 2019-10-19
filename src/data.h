@@ -26,3 +26,6 @@ typedef struct {
   int item_list_size;
 } Map;
 
+typedef struct {
+  Vector2 pos;
+} Card;
