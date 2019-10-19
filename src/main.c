@@ -3,11 +3,13 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 #define CARD_SIZE 50
+#define INGREDIENT_CARD_SIZE CARD_SIZE/2
 #define CARD_PADDING 5
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
@@ -18,6 +20,7 @@
                                                     (a).pos.z + 0.5f}}\
 
 #include "data.h"
+#include "cards.c"
 #include "data.c"
 
 bool collides_with_counters(Player p, Map map) {
@@ -61,10 +64,9 @@ int main(void) {
 
   Map map = { 0 };
 
-  Card current_cards[20] = {0};
-  int current_cards_len = 0;
+  GUI gui = {0};
 
-  init_data(&map, current_cards, &current_cards_len);
+  init_data(&map, &gui);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -156,14 +158,24 @@ int main(void) {
 
     EndMode3D();
 
-    for (int i = 0; i < current_cards_len; i++) {
+    for (int i = 0; i < gui.cards_len; i++) {
       Rectangle card = {
-        current_cards[i].pos.x,
-        current_cards[i].pos.y,
-        50, 50
+        gui.cards[i].pos.x,
+        gui.cards[i].pos.y,
+        get_card_width(gui.cards[i]), CARD_SIZE
       };
       DrawRectangleRounded(card, 0.2f, 0, WHITE);
       DrawRectangleRoundedLines(card, 0.2f, 0, 1, BLACK);
+
+      for (int j = 0; j < gui.cards[i].ingredient_list_len; j++) {
+        Rectangle ingredient = {
+          gui.cards[i].pos.x + (j * INGREDIENT_CARD_SIZE),
+          gui.cards[i].pos.y + (3 * CARD_SIZE / 4),
+          INGREDIENT_CARD_SIZE, INGREDIENT_CARD_SIZE
+        };
+        DrawRectangleRec(ingredient, WHITE);
+        DrawRectangleLines(ingredient.x, ingredient.y, ingredient.width, ingredient.height, BLACK);
+      }
     }
 
     DrawFPS(10, 10);
