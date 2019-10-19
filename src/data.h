@@ -37,15 +37,10 @@ typedef struct {
   int dropped_item_list_size;
 } Map;
 
-typedef enum {
-  I_BLUE,
-  I_RED
-} Ingredient;
-
 typedef struct {
   Vector2 pos;
 
-  Ingredient ingredient_list[5];
+  ItemType ingredient_list[5];
   int ingredient_list_len;
 } Card;
 
