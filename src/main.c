@@ -18,6 +18,13 @@ int main(void) {
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
   while (!WindowShouldClose()) {
+    if (IsGamepadAvailable(GAMEPAD_PLAYER1)) {
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_UP)) cubePosition.z += 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) cubePosition.z -= 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) cubePosition.x -= 0.1f;
+      if (IsGamepadButtonDown(GAMEPAD_PLAYER1, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) cubePosition.x += 0.1f;
+    }
+
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
