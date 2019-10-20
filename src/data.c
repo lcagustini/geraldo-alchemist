@@ -163,11 +163,4 @@ void init_data(Map *map, GUI *gui) {
   add_item_to_counter(&map->counter_list[2], IT_EMPTY_BOTTLE);
   //add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
   //add_item_to_counter(&map->counter_list[8], IT_INGREDIENT3);
-
-#if 0
-  ItemType list[5] = {1, 1, 1, 1, 1};
-  add_card(gui, list, 2);
-  add_card(gui, list, 3);
-  add_card(gui, list, 5);
-#endif
 }
