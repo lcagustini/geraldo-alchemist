@@ -160,7 +160,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, 4.0, 3.0, dir);
   add_counter(map, 5.0, 3.0, dir);
 
-  //add_item_to_counter(&map->counter_list[3], IT_INGREDIENT1);
+  add_item_to_counter(&map->counter_list[2], IT_EMPTY_BOTTLE);
   //add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
   //add_item_to_counter(&map->counter_list[8], IT_INGREDIENT3);
 
