@@ -387,8 +387,9 @@ int main(void) {
   global_potion_process_list_len = sizeof(global_potion_process_list)/sizeof(PotionProcess);
 
   global_available_recipes_count = 0;
-  add_available_recipes(IT_INGREDIENT1_POWDER);
-  add_available_recipes(IT_INGREDIENT2_POWDER);
+  add_available_recipes(IT_SMALL_FLOWER);
+  add_available_recipes(IT_RED_POWDER);
+
   generate_recipe(&gui);
   generate_recipe(&gui);
   generate_recipe(&gui);
