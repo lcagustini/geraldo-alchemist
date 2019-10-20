@@ -20,6 +20,8 @@
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
 #define PLAYER_SPEED 5.0f
 
+#define FLOOR_SIZE 2.0f
+
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
                                                     (a).pos.z - 0.5f},\
@@ -114,6 +116,11 @@ ItemType get_recipe_result(ItemType input[], int input_len, DeviceType process) 
 int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+
+  Mesh plane_mesh = GenMeshPlane(FLOOR_SIZE, FLOOR_SIZE, 10, 10);
+  Model floor_model = LoadModelFromMesh(plane_mesh);
+  floor_model.materials[0].maps[MAP_DIFFUSE].texture = LoadTexture("assets/wood.png");
+  GenTextureMipmaps(&floor_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   global_scale_model = LoadModel("assets/scale.obj");
   SetMaterialTexture(&global_scale_model.materials[0], MAP_DIFFUSE,
@@ -239,11 +246,18 @@ int main(void) {
       }
     }
 
+    // draw floor
+    for (int i = -20; i < 20; i++) {
+      for (int j = -20; j < 20; j++) {
+        DrawModel(floor_model, (Vector3) { i * FLOOR_SIZE, 0, j * FLOOR_SIZE }, 1.0f, WHITE);
+      }
+    }
+
     // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
-      DrawModel(c.model, Vector3Zero(), 1.00f, WHITE);
+      DrawModel(c.model, Vector3Zero(), 1.0f, WHITE);
 
       if (c.item) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
