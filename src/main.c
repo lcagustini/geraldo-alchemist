@@ -104,7 +104,7 @@ int main(void) {
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
-      DrawModel(c.model, c.pos, 1.0f, WHITE);
+      DrawModel(c.model, c.pos, 1.10f, WHITE);
 
       if (c.item.type) {
         Vector3 item_pos = {c.pos.x, c.pos.y+0.6f, c.pos.z};
