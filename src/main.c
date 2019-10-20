@@ -15,6 +15,7 @@
 #define CARD_PADDING 5
 
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
+#define PLAYER_SPEED 5.0f
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
@@ -76,6 +77,12 @@ int main(void) {
 
 
   while (!WindowShouldClose()) {
+    BeginDrawing();
+
+    ClearBackground(GRAY);
+
+    BeginMode3D(camera);
+
     for (int i = 0; i < map.player_count; i++) {
       keyboard_input(&map, i);
 
@@ -84,11 +91,6 @@ int main(void) {
       }
     }
 
-    BeginDrawing();
-
-    ClearBackground(GRAY);
-
-    BeginMode3D(camera);
 
     // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {

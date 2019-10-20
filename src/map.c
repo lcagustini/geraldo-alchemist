@@ -1,7 +1,17 @@
 bool collides_with_counters(Map map, int player_id) {
   for (int i = 0; i < map.counter_list_size; i++) {
+#if 0
     if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]),
                             GET_COUNTER_BBOX(map.counter_list[i]))) {
+#else
+    BoundingBox bbox = MeshBoundingBox(map.counter_list[i].model.meshes[0]);
+    //bbox.min = Vector3Transform(bbox.min, map.counter_list[i].model.transform);
+    bbox.min = Vector3Add(bbox.min, map.counter_list[i].pos);
+    //bbox.max = Vector3Transform(bbox.max, map.counter_list[i].model.transform);
+    bbox.max = Vector3Add(bbox.max, map.counter_list[i].pos);
+    DrawBoundingBox(bbox, BLUE);
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
+#endif
       return true;
     }
   }
