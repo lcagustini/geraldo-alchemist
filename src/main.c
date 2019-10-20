@@ -61,6 +61,10 @@ Model global_green_stone_model;
 Model global_purple_stone_model;
 Model global_crystal_model;
 Model global_bone_model;
+Model global_white_powder_model;
+Model global_red_powder_model;
+Model global_green_powder_model;
+Model global_blue_powder_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
@@ -218,6 +222,30 @@ int main(void) {
   GenTextureMipmaps(&global_flower_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_flower_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
+  global_green_powder_model = LoadModel("assets/pozinho.obj");
+  //SetMaterialTexture(&global_green_powder_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/po_verde_text.png"));
+  //GenTextureMipmaps(&global_green_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_green_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
+  global_red_powder_model = LoadModel("assets/pozinho.obj");
+  //SetMaterialTexture(&global_red_powder_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/po_vermelho_text.png"));
+  //GenTextureMipmaps(&global_red_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_red_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
+  global_blue_powder_model = LoadModel("assets/pozinho.obj");
+  //SetMaterialTexture(&global_blue_powder_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/po_azul_text.png"));
+  //GenTextureMipmaps(&global_blue_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_blue_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
+  global_white_powder_model = LoadModel("assets/pozinho.obj");
+  //SetMaterialTexture(&global_white_powder_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/po_branco_text.png"));
+  //GenTextureMipmaps(&global_white_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_white_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
   global_bone_model = LoadModel("assets/osso.obj");
   //SetMaterialTexture(&global_bone_model.materials[0], MAP_DIFFUSE,
       //LoadTexture("assets/bone_text.png"));
@@ -359,6 +387,10 @@ int main(void) {
   global_purple_stone_model.materials[0].shader = shader;
   global_crystal_model.materials[0].shader = shader;
   global_bone_model.materials[0].shader = shader;
+  global_white_powder_model.materials[0].shader = shader;
+  global_red_powder_model.materials[0].shader = shader;
+  global_blue_powder_model.materials[0].shader = shader;
+  global_green_powder_model.materials[0].shader = shader;
   global_flower_model.materials[0].shader = shader;
 
   {
@@ -381,10 +413,10 @@ int main(void) {
     global_item_models[IT_BONE] = global_bone_model;
 
     global_item_models[IT_SMALL_FLOWER] = global_crystal_model;
-    global_item_models[IT_RED_POWDER] = global_crystal_model;
+    global_item_models[IT_RED_POWDER] = global_red_powder_model;
     global_item_models[IT_SMALL_MUSHROOM] = global_crystal_model;
-    global_item_models[IT_BLUE_POWDER] = global_crystal_model;
-    global_item_models[IT_WHITE_POWDER] = global_crystal_model;
+    global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
+    global_item_models[IT_WHITE_POWDER] = global_white_powder_model;
     global_item_models[IT_GREEN_POWDER] = global_crystal_model;
     global_item_models[IT_SMALL_RED_ROCK] = global_crystal_model;
     global_item_models[IT_SMALL_BONE] = global_crystal_model;
@@ -401,6 +433,8 @@ int main(void) {
     global_item_icons_scale[IT_FLOWER] = 0.05f;
     global_item_icons[IT_BONE] = LoadTexture("assets/osso.png");
     global_item_icons_scale[IT_BONE] = 0.05f;
+    global_item_icons[IT_WHITE_POWDER] = LoadTexture("assets/pozinho_branco.png");
+    global_item_icons_scale[IT_WHITE_POWDER] = 0.05f;
     global_item_icons[IT_SMALL_FLOWER] = LoadTexture("assets/flor.png");
     global_item_icons_scale[IT_SMALL_FLOWER] = 0.05f;
   }
