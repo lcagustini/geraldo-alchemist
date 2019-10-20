@@ -95,6 +95,7 @@ bool consume_recipe(ItemType item) {
     if (item == global_wanted_items[i]) {
       global_wanted_items[i] = global_wanted_items[global_wanted_items_start];
       global_wanted_items_start++;
+      remove_card(&gui, item);
       return true;
     }
   }

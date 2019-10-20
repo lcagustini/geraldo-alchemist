@@ -151,7 +151,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -5.0, 3.0, dir);
   add_counter(map, -4.0, 3.0, dir);
   add_counter(map, -3.0, 3.0, dir);
-  add_chest(map, -2.0, 3.0, dir, IT_RED_ROCK);
+  add_chest(map, -2.0, 3.0, dir, IT_SMALL_FLOWER);
   add_counter(map, -1.0, 3.0, dir);
   add_delivery(map, 0.0, 3.0, dir);
   add_counter(map, 1.0, 3.0, dir);

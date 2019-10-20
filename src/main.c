@@ -26,7 +26,7 @@
 
 #define MAX_WANTED_ITEMS 8
 
-#define RECIPE_GENERATION_TIMER 5.0f;
+#define RECIPE_GENERATION_TIMER 0.2f;
 
 #define CAULDRON_SPEED 20.0f
 #define CENTRIFUGE_SPEED 20.0f
@@ -63,6 +63,7 @@ Model global_crystal_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
+Model global_flower_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -177,6 +178,10 @@ Model global_item_models[IT_MAX];
 
 int global_delivered_items = 0;
 
+Texture2D global_item_icons[IT_MAX];
+float global_item_icons_scale[IT_MAX];
+
+GUI gui = {0};
 
 #include "util.c"
 #include "cards.c"
@@ -205,6 +210,12 @@ int main(void) {
 
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+
+  global_flower_model = LoadModel("assets/flor.obj");
+  SetMaterialTexture(&global_flower_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/flor_text.png"));
+  GenTextureMipmaps(&global_flower_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_flower_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
   global_crystal_model = LoadModel("assets/crystal.obj");
   SetMaterialTexture(&global_crystal_model.materials[0], MAP_DIFFUSE,
@@ -340,8 +351,8 @@ int main(void) {
   global_green_stone_model.materials[0].shader = shader;
   global_purple_stone_model.materials[0].shader = shader;
   global_crystal_model.materials[0].shader = shader;
+  global_flower_model.materials[0].shader = shader;
 
-  global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
   {
     global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
     global_item_models[IT_GARBAGE_BOTTLE] = global_crystal_model;
@@ -355,7 +366,7 @@ int main(void) {
 
     global_item_models[IT_BOTTLED_ITEMS] = global_crystal_model;
 
-    global_item_models[IT_FLOWER] = global_crystal_model;
+    global_item_models[IT_FLOWER] = global_flower_model;
     global_item_models[IT_RED_ROCK] = global_crystal_model;
     global_item_models[IT_MUSHROOM] = global_crystal_model;
     global_item_models[IT_BLUE_CRYSTAL] = global_crystal_model;
@@ -377,12 +388,17 @@ int main(void) {
     global_item_models[IT_GARBAGE] = global_crystal_model;
   }
 
+  {
+    global_item_icons[IT_FLOWER] = LoadTexture("assets/flor.png");
+    global_item_icons_scale[IT_FLOWER] = 0.05f;
+    global_item_icons[IT_SMALL_FLOWER] = LoadTexture("assets/flor.png");
+    global_item_icons_scale[IT_SMALL_FLOWER] = 0.05f;
+  }
+
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
   Map map = { 0 };
-
-  GUI gui = {0};
 
   init_data(&map, &gui);
   map.players[0].pos.x = -1;
@@ -593,6 +609,9 @@ int main(void) {
         get_card_width(gui.cards[i]), CARD_SIZE
       };
       DrawRectangleRounded(card, 0.2f, 0, WHITE);
+      float testf = (float) ((float)get_card_width(gui.cards[i]) - (global_item_icons[gui.cards[i].product].width * global_item_icons_scale[gui.cards[i].product])) / 2.0f;
+      Vector2 item_sloc = {gui.cards[i].pos.x + testf, gui.cards[i].pos.y};
+      DrawTextureEx(global_item_icons[gui.cards[i].product], item_sloc, 0.0f, global_item_icons_scale[gui.cards[i].product], WHITE);
       DrawRectangleRoundedLines(card, 0.2f, 0, 1, BLACK);
 
       for (int j = 0; j < gui.cards[i].ingredient_list_len; j++) {
@@ -606,7 +625,7 @@ int main(void) {
       }
     }
 
-    DrawFPS(10, 10);
+    DrawFPS(SCREEN_WIDTH-80, 10);
 
     EndDrawing();
   }
