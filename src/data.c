@@ -1,7 +1,6 @@
 void add_counter(Map *map, float x, float z, Vector3 dir) {
   map->counter_list[map->counter_list_size].item.type = IT_UNINITIALIZED;
   map->counter_list[map->counter_list_size].pos = (Vector3){ x, 0.0f, z };
-  map->counter_list[map->counter_list_size].dir = dir;
   map->counter_list[map->counter_list_size].model = global_counter_model;
   float angle = atan2f(-dir.z, dir.x);
   map->counter_list[map->counter_list_size].model.transform = MatrixRotate((Vector3){0,1,0}, angle);

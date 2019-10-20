@@ -20,7 +20,6 @@ typedef struct {
 
 typedef struct {
   Vector3 pos;
-  Vector3 dir;
   Item item;
   Model model;
 } Counter;
