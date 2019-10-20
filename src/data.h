@@ -169,6 +169,7 @@ typedef struct {
 typedef struct {
   Vector2 pos;
 
+  ItemType product;
   ItemType ingredient_list[MAX_INGREDIENTS];
   int ingredient_list_len;
 } Card;

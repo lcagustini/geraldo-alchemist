@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
 
 #define SCREEN_WIDTH 1600
 #define SCREEN_HEIGHT 900
@@ -21,6 +23,8 @@
 #define PLAYER_SPEED 5.0f
 
 #define FLOOR_SIZE 2.0f
+
+#define MAX_WANTED_ITEMS 8
 
 #define CAULDRON_SPEED 20.0f
 #define CENTRIFUGE_SPEED 20.0f
@@ -97,6 +101,13 @@ PotionProcess global_potion_process_list[] = {
   }
 };
 int global_potion_process_list_len;
+
+ItemType global_available_recipes[MAX_WANTED_ITEMS];
+int global_available_recipes_count;
+
+ItemType global_wanted_items[MAX_WANTED_ITEMS];
+int global_wanted_items_start;
+int global_wanted_items_end;
 
 Model global_item_models[IT_MAX];
 
@@ -295,6 +306,14 @@ int main(void) {
   map.player_count = 2;
 
   global_potion_process_list_len = sizeof(global_potion_process_list)/sizeof(PotionProcess);
+
+  global_available_recipes_count = 0;
+  add_available_recipes(IT_INGREDIENT1_POWDER);
+  add_available_recipes(IT_INGREDIENT2_POWDER);
+  generate_recipe(&gui);
+  generate_recipe(&gui);
+  generate_recipe(&gui);
+  generate_recipe(&gui);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
