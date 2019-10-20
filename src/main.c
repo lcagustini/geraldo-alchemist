@@ -20,6 +20,8 @@
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
 #define PLAYER_SPEED 5.0f
 
+#define FLOOR_SIZE 2.0f
+
 #define CAULDRON_SPEED 20.0f
 #define CENTRIFUGE_SPEED 20.0f
 #define SCALE_SPEED 5.0f
@@ -138,6 +140,11 @@ int main(void) {
       LoadTexture("assets/scale_full_text.png"));
   GenTextureMipmaps(&global_scale_full_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  Mesh plane_mesh = GenMeshPlane(FLOOR_SIZE, FLOOR_SIZE, 10, 10);
+  Model floor_model = LoadModelFromMesh(plane_mesh);
+  floor_model.materials[0].maps[MAP_DIFFUSE].texture = LoadTexture("assets/wood.png");
+  GenTextureMipmaps(&floor_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   global_counter_model = LoadModel("assets/balcao.obj");
   SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/balcao_text.png"));
@@ -176,6 +183,7 @@ int main(void) {
   global_character_model.materials[0].shader = shader;
   global_centrifuge_open_model.materials[0].shader = shader;
   global_centrifuge_closed_model.materials[0].shader = shader;
+  floor_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -257,11 +265,18 @@ int main(void) {
       }
     }
 
+    // draw floor
+    for (int i = -20; i < 20; i++) {
+      for (int j = -20; j < 20; j++) {
+        DrawModel(floor_model, (Vector3) { i * FLOOR_SIZE, 0, j * FLOOR_SIZE }, 1.0f, WHITE);
+      }
+    }
+
     // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
-      DrawModel(c.model, Vector3Zero(), 1.00f, WHITE);
+      DrawModel(c.model, Vector3Zero(), 1.0f, WHITE);
 
       if (c.item) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
