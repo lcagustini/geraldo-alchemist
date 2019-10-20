@@ -62,6 +62,7 @@ Model global_garbage_bottle_model;
 Model global_empty_bottle_model;
 
 Model global_red_stone_model;
+Model global_small_red_stone_model;
 Model global_yellow_stone_model;
 Model global_green_stone_model;
 Model global_purple_stone_model;
@@ -70,6 +71,7 @@ Model global_crystal_model;
 Model global_red_crystal_model;
 Model global_blue_crystal_model;
 Model global_bone_model;
+Model global_small_bone_model;
 Model global_white_powder_model;
 Model global_red_powder_model;
 Model global_green_powder_model;
@@ -82,6 +84,7 @@ Model global_garbage_model;
 Model global_flower_model;
 Model global_small_flower_model;
 Model global_mushroom_model;
+Model global_small_mushroom_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -230,6 +233,12 @@ int main(void) {
 
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "geraldo alchemist");
 
+  global_small_mushroom_model = LoadModel("assets/mushroom.obj");
+  SetMaterialTexture(&global_small_mushroom_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/mushroom_text.png"));
+  GenTextureMipmaps(&global_small_mushroom_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_small_mushroom_model.transform = MatrixScale(0.3f, 0.3f, 0.3f);
+
   global_mushroom_model = LoadModel("assets/mushroom.obj");
   SetMaterialTexture(&global_mushroom_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/mushroom_text.png"));
@@ -271,6 +280,12 @@ int main(void) {
       //LoadTexture("assets/po_branco_text.png"));
   //GenTextureMipmaps(&global_white_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_white_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
+  global_small_bone_model = LoadModel("assets/osso.obj");
+  //SetMaterialTexture(&global_bone_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/bone_text.png"));
+  //GenTextureMipmaps(&global_bone_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_small_bone_model.transform = MatrixScale(0.13f, 0.13f, 0.13f);
 
   global_bone_model = LoadModel("assets/osso.obj");
   //SetMaterialTexture(&global_bone_model.materials[0], MAP_DIFFUSE,
@@ -319,6 +334,12 @@ int main(void) {
       LoadTexture("assets/stone_yellow_text.png"));
   GenTextureMipmaps(&global_yellow_stone_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_yellow_stone_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
+  global_small_red_stone_model = LoadModel("assets/stone.obj");
+  SetMaterialTexture(&global_small_red_stone_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/stone_red_text.png"));
+  GenTextureMipmaps(&global_small_red_stone_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_small_red_stone_model.transform = MatrixScale(0.3f, 0.3f, 0.3f);
 
   global_red_stone_model = LoadModel("assets/stone.obj");
   SetMaterialTexture(&global_red_stone_model.materials[0], MAP_DIFFUSE,
@@ -439,6 +460,7 @@ int main(void) {
   global_yellow_potion_model.materials[0].shader = shader;
   global_empty_bottle_model.materials[0].shader = shader;
   global_garbage_bottle_model.materials[0].shader = shader;
+  global_small_red_stone_model.materials[0].shader = shader;
   global_red_stone_model.materials[0].shader = shader;
   global_yellow_stone_model.materials[0].shader = shader;
   global_green_stone_model.materials[0].shader = shader;
@@ -448,6 +470,7 @@ int main(void) {
   global_red_crystal_model.materials[0].shader = shader;
   global_blue_crystal_model.materials[0].shader = shader;
   global_bone_model.materials[0].shader = shader;
+  global_small_bone_model.materials[0].shader = shader;
   global_white_powder_model.materials[0].shader = shader;
   global_red_powder_model.materials[0].shader = shader;
   global_blue_powder_model.materials[0].shader = shader;
@@ -455,6 +478,7 @@ int main(void) {
   global_flower_model.materials[0].shader = shader;
   global_small_flower_model.materials[0].shader = shader;
   global_mushroom_model.materials[0].shader = shader;
+  global_small_mushroom_model.materials[0].shader = shader;
 
   {
     global_item_models[IT_EMPTY_BOTTLE] = global_empty_bottle_model;
@@ -475,12 +499,12 @@ int main(void) {
 
     global_item_models[IT_SMALL_FLOWER] = global_small_flower_model;
     global_item_models[IT_RED_POWDER] = global_red_powder_model;
-    global_item_models[IT_SMALL_MUSHROOM] = global_mushroom_model;
+    global_item_models[IT_SMALL_MUSHROOM] = global_small_mushroom_model;
     global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
     global_item_models[IT_WHITE_POWDER] = global_white_powder_model;
     global_item_models[IT_GREEN_POWDER] = global_crystal_model;
-    global_item_models[IT_SMALL_RED_ROCK] = global_red_stone_model;
-    global_item_models[IT_SMALL_BONE] = global_bone_model;
+    global_item_models[IT_SMALL_RED_ROCK] = global_small_red_stone_model;
+    global_item_models[IT_SMALL_BONE] = global_small_bone_model;
 
     global_item_models[IT_RED_CRYSTAL] = global_red_crystal_model;
     global_item_models[IT_YELLOW_CRYSTAL] = global_crystal_model;
