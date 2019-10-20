@@ -64,40 +64,102 @@ Model global_trashcan_model;
 
 PotionProcess global_potion_process_list[] = {
   {
-    .before = {IT_INGREDIENT1},
-    .before_len = 1,
-    .process = DT_MASHER,
-    .after = IT_INGREDIENT1_POWDER
-  },
-  {
-    .before = {IT_INGREDIENT2},
-    .before_len = 1,
-    .process = DT_MASHER,
-    .after = IT_INGREDIENT2_POWDER
-  },
-  {
-    .before = {IT_INGREDIENT3},
+    .before = {IT_FLOWER},
     .before_len = 1,
     .process = DT_SCALE,
-    .after = IT_INGREDIENT3_SMALL
+    .after = IT_SMALL_FLOWER
   },
   {
-    .before = {IT_INGREDIENT4},
+    .before = {IT_RED_ROCK},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_RED_POWDER
+  },
+  {
+    .before = {IT_MUSHROOM},
     .before_len = 1,
     .process = DT_SCALE,
-    .after = IT_INGREDIENT4_SMALL,
+    .after = IT_SMALL_MUSHROOM
   },
   {
-    .before = {IT_INGREDIENT3_SMALL, IT_INGREDIENT4_SMALL},
-    .before_len = 2,
+    .before = {IT_BLUE_CRYSTAL},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_BLUE_POWDER,
+  },
+  {
+    .before = {IT_BONE},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_WHITE_POWDER,
+  },
+  {
+    .before = {IT_MUSHROOM},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_GREEN_POWDER,
+  },
+  {
+    .before = {IT_RED_ROCK},
+    .before_len = 1,
+    .process = DT_SCALE,
+    .after = IT_SMALL_RED_ROCK,
+  },
+  {
+    .before = {IT_BONE},
+    .before_len = 1,
+    .process = DT_SCALE,
+    .after = IT_SMALL_BONE,
+  },
+
+  {
+    .before = {IT_SMALL_FLOWER, IT_RED_POWDER, IT_SMALL_MUSHROOM},
+    .before_len = 3,
     .process = DT_CAULDRON,
-    .after = IT_INGREDIENT_COOKED_3_4,
+    .after = IT_RED_POTION,
   },
   {
-    .before = {IT_INGREDIENT3_SMALL},
+    .before = {IT_BLUE_POWDER, IT_SMALL_FLOWER, IT_RED_POWDER},
+    .before_len = 3,
+    .process = DT_CAULDRON,
+    .after = IT_YELLOW_POTION,
+  },
+  {
+    .before = {IT_WHITE_POWDER, IT_SMALL_FLOWER, IT_GREEN_POWDER, IT_SMALL_RED_ROCK},
+    .before_len = 4,
+    .process = DT_CAULDRON,
+    .after = IT_BLACK_POTION,
+  },
+  {
+    .before = {IT_GREEN_POWDER, IT_SMALL_FLOWER, IT_BLUE_POWDER},
+    .before_len = 3,
+    .process = DT_CAULDRON,
+    .after = IT_PINK_POTION,
+  },
+  {
+    .before = {IT_SMALL_BONE, IT_SMALL_FLOWER, IT_BLUE_POWDER},
+    .before_len = 3,
+    .process = DT_CAULDRON,
+    .after = IT_BLUE_POTION,
+  },
+
+  {
+    .before = {IT_RED_POTION},
     .before_len = 1,
     .process = DT_CENTRIFUGE,
-    .after = IT_INGREDIENT_SOLID_3,
+    .after = IT_RED_CRYSTAL,
+  },
+  {
+    .before = {IT_YELLOW_POTION},
+    .before_len = 1,
+    .process = DT_CENTRIFUGE,
+    .after = IT_YELLOW_CRYSTAL,
+  },
+  {
+    .before = {IT_BLACK_POTION},
+    .before_len = 1,
+    .process = DT_CENTRIFUGE,
+    .after = IT_LITTLE_MAN,
   }
 };
 int global_potion_process_list_len;
@@ -272,24 +334,38 @@ int main(void) {
   global_purple_stone_model.materials[0].shader = shader;
   global_crystal_model.materials[0].shader = shader;
 
+  global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
   {
-    global_item_models[IT_UNINITIALIZED] = global_red_potion_model;
-
     global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
-    global_item_models[IT_GARBAGE_BOTTLE] = global_green_stone_model;
-    global_item_models[IT_INGREDIENT_COOKED_3_4] = global_blue_potion_model;
+    global_item_models[IT_GARBAGE_BOTTLE] = global_crystal_model;
 
-    global_item_models[IT_INGREDIENT1] = global_purple_stone_model;
-    global_item_models[IT_INGREDIENT2] = global_yellow_stone_model;
-    global_item_models[IT_INGREDIENT3] = global_red_stone_model;
-    global_item_models[IT_INGREDIENT4] = global_crystal_model;
+    global_item_models[IT_RED_POTION] = global_crystal_model;
+    global_item_models[IT_YELLOW_POTION] = global_crystal_model;
+    global_item_models[IT_BLACK_POTION] = global_crystal_model;
 
-    global_item_models[IT_INGREDIENT1_POWDER] = global_green_stone_model;
-    global_item_models[IT_INGREDIENT2_POWDER] = global_yellow_potion_model;
-    global_item_models[IT_INGREDIENT3_SMALL] = global_red_potion_model;
-    global_item_models[IT_INGREDIENT4_SMALL] = global_red_potion_model;
+    global_item_models[IT_PINK_POTION] = global_crystal_model;
+    global_item_models[IT_BLUE_POTION] = global_crystal_model;
 
-    global_item_models[IT_INGREDIENT_SOLID_3] = global_blue_potion_model;
+    global_item_models[IT_BOTTLED_ITEMS] = global_crystal_model;
+
+    global_item_models[IT_FLOWER] = global_crystal_model;
+    global_item_models[IT_RED_ROCK] = global_crystal_model;
+    global_item_models[IT_MUSHROOM] = global_crystal_model;
+    global_item_models[IT_BLUE_CRYSTAL] = global_crystal_model;
+    global_item_models[IT_BONE] = global_crystal_model;
+
+    global_item_models[IT_SMALL_FLOWER] = global_crystal_model;
+    global_item_models[IT_RED_POWDER] = global_crystal_model;
+    global_item_models[IT_SMALL_MUSHROOM] = global_crystal_model;
+    global_item_models[IT_BLUE_POWDER] = global_crystal_model;
+    global_item_models[IT_WHITE_POWDER] = global_crystal_model;
+    global_item_models[IT_GREEN_POWDER] = global_crystal_model;
+    global_item_models[IT_SMALL_RED_ROCK] = global_crystal_model;
+    global_item_models[IT_SMALL_BONE] = global_crystal_model;
+
+    global_item_models[IT_RED_CRYSTAL] = global_crystal_model;
+    global_item_models[IT_YELLOW_CRYSTAL] = global_crystal_model;
+    global_item_models[IT_LITTLE_MAN] = global_crystal_model;
 
     global_item_models[IT_GARBAGE] = global_crystal_model;
   }
