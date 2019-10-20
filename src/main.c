@@ -435,6 +435,12 @@ int main(void) {
     global_item_icons_scale[IT_BONE] = 0.05f;
     global_item_icons[IT_WHITE_POWDER] = LoadTexture("assets/pozinho_branco.png");
     global_item_icons_scale[IT_WHITE_POWDER] = 0.05f;
+    global_item_icons[IT_RED_POWDER] = LoadTexture("assets/pozinho_vermelho.png");
+    global_item_icons_scale[IT_RED_POWDER] = 0.05f;
+    global_item_icons[IT_GREEN_POWDER] = LoadTexture("assets/pozinho_verde.png");
+    global_item_icons_scale[IT_GREEN_POWDER] = 0.05f;
+    global_item_icons[IT_BLUE_POWDER] = LoadTexture("assets/pozinho_azul.png");
+    global_item_icons_scale[IT_BLUE_POWDER] = 0.05f;
     global_item_icons[IT_SMALL_FLOWER] = LoadTexture("assets/flor.png");
     global_item_icons_scale[IT_SMALL_FLOWER] = 0.05f;
   }
