@@ -65,6 +65,8 @@ Model global_green_stone_model;
 Model global_purple_stone_model;
 
 Model global_crystal_model;
+Model global_red_crystal_model;
+Model global_blue_crystal_model;
 Model global_bone_model;
 Model global_white_powder_model;
 Model global_red_powder_model;
@@ -75,6 +77,7 @@ Model global_delivery_model;
 Model global_trashcan_model;
 
 Model global_flower_model;
+Model global_mushroom_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -223,11 +226,17 @@ int main(void) {
 
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "geraldo alchemist");
 
+  global_mushroom_model = LoadModel("assets/mushroom.obj");
+  SetMaterialTexture(&global_mushroom_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/mushroom_text.png"));
+  GenTextureMipmaps(&global_mushroom_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_mushroom_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
   global_flower_model = LoadModel("assets/flor.obj");
   SetMaterialTexture(&global_flower_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/flor_text.png"));
   GenTextureMipmaps(&global_flower_model.materials[0].maps[MAP_DIFFUSE].texture);
-  global_flower_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+  global_flower_model.transform = MatrixScale(0.15f, 0.15f, 0.15f);
 
   global_green_powder_model = LoadModel("assets/pozinho.obj");
   //SetMaterialTexture(&global_green_powder_model.materials[0], MAP_DIFFUSE,
@@ -413,6 +422,7 @@ int main(void) {
   global_blue_powder_model.materials[0].shader = shader;
   global_green_powder_model.materials[0].shader = shader;
   global_flower_model.materials[0].shader = shader;
+  global_mushroom_model.materials[0].shader = shader;
 
   {
     global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
@@ -427,7 +437,7 @@ int main(void) {
 
     global_item_models[IT_FLOWER] = global_flower_model;
     global_item_models[IT_RED_ROCK] = global_red_stone_model;
-    global_item_models[IT_MUSHROOM] = global_crystal_model;
+    global_item_models[IT_MUSHROOM] = global_mushroom_model;
     global_item_models[IT_BLUE_CRYSTAL] = global_blue_crystal_model;
     global_item_models[IT_BONE] = global_bone_model;
 
@@ -454,8 +464,12 @@ int main(void) {
     global_item_icons_scale[IT_BONE] = 0.05f;
     global_item_icons[IT_WHITE_POWDER] = LoadTexture("assets/pozinho_branco.png");
     global_item_icons_scale[IT_WHITE_POWDER] = 0.05f;
+    global_item_icons[IT_RED_ROCK] = LoadTexture("assets/red_rock.png");
+    global_item_icons_scale[IT_RED_ROCK] = 0.05f;
     global_item_icons[IT_RED_POWDER] = LoadTexture("assets/pozinho_vermelho.png");
     global_item_icons_scale[IT_RED_POWDER] = 0.05f;
+    global_item_icons[IT_MUSHROOM] = LoadTexture("assets/mushroom.png");
+    global_item_icons_scale[IT_MUSHROOM] = 0.05f;
     global_item_icons[IT_GREEN_POWDER] = LoadTexture("assets/pozinho_verde.png");
     global_item_icons_scale[IT_GREEN_POWDER] = 0.05f;
     global_item_icons[IT_BLUE_POWDER] = LoadTexture("assets/pozinho_azul.png");
@@ -463,9 +477,11 @@ int main(void) {
     global_item_icons[IT_SMALL_FLOWER] = LoadTexture("assets/flor.png");
     global_item_icons_scale[IT_SMALL_FLOWER] = 0.05f;
     global_item_icons[IT_BLUE_CRYSTAL] = LoadTexture("assets/crystal_azul.png");
-    global_item_icons_scale[IT_BLUE_CRYSTAL] = 0.05f
+    global_item_icons_scale[IT_BLUE_CRYSTAL] = 0.05f;
     global_item_icons[IT_RED_CRYSTAL] = LoadTexture("assets/crystal_vermelho.png");
-    global_item_icons_scale[IT_RED_CRYSTAL] = 0.05f
+    global_item_icons_scale[IT_RED_CRYSTAL] = 0.05f;
+    global_item_icons[IT_BLUE_POTION] = LoadTexture("assets/blue_potion.png");
+    global_item_icons_scale[IT_BLUE_POTION] = 0.05f;
   }
 
 
@@ -483,8 +499,13 @@ int main(void) {
   global_potion_process_list_len = sizeof(global_potion_process_list)/sizeof(PotionProcess);
 
   global_available_recipes_count = 0;
-  add_available_recipes(IT_SMALL_FLOWER);
+
   add_available_recipes(IT_WHITE_POWDER);
+  add_available_recipes(IT_RED_POWDER);
+  add_available_recipes(IT_GREEN_POWDER);
+  add_available_recipes(IT_BLUE_POWDER);
+  add_available_recipes(IT_SMALL_FLOWER);
+  add_available_recipes(IT_BLUE_POTION);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 13.0f, 13.0f };  // Camera position
