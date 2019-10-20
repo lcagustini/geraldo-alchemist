@@ -39,7 +39,8 @@
 
 Model global_counter_model;
 Model global_character_model;
-Model global_scale_model;
+Model global_scale_empty_model;
+Model global_scale_full_model;
 Model global_cauldron_model;
 Model global_centrifuge_open_model;
 Model global_centrifuge_closed_model;
@@ -129,15 +130,20 @@ int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
+  global_scale_empty_model = LoadModel("assets/scale_empty.obj");
+  SetMaterialTexture(&global_scale_empty_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/scale_empty_text.png"));
+  GenTextureMipmaps(&global_scale_empty_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_scale_full_model = LoadModel("assets/scale_full.obj");
+  SetMaterialTexture(&global_scale_full_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/scale_full_text.png"));
+  GenTextureMipmaps(&global_scale_full_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   Mesh plane_mesh = GenMeshPlane(FLOOR_SIZE, FLOOR_SIZE, 1, 1);
   Model floor_model = LoadModelFromMesh(plane_mesh);
   floor_model.materials[0].maps[MAP_DIFFUSE].texture = LoadTexture("assets/wood.png");
   GenTextureMipmaps(&floor_model.materials[0].maps[MAP_DIFFUSE].texture);
-
-  global_scale_model = LoadModel("assets/scale.obj");
-  SetMaterialTexture(&global_scale_model.materials[0], MAP_DIFFUSE,
-      LoadTexture("assets/scale_text.png"));
-  GenTextureMipmaps(&global_scale_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   global_counter_model = LoadModel("assets/balcao.obj");
   SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE,
@@ -171,11 +177,13 @@ int main(void) {
   SetShaderValue(shader, ambientLoc, (float[4]){ 0.3f, 0.3f, 0.3f, 1.0f }, UNIFORM_VEC4);
 
   global_counter_model.materials[0].shader = shader;
-  global_scale_model.materials[0].shader = shader;
+  global_scale_full_model.materials[0].shader = shader;
+  global_scale_empty_model.materials[0].shader = shader;
   global_cauldron_model.materials[0].shader = shader;
   global_character_model.materials[0].shader = shader;
   global_centrifuge_open_model.materials[0].shader = shader;
   global_centrifuge_closed_model.materials[0].shader = shader;
+  floor_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -280,7 +288,7 @@ int main(void) {
     for (int i = 0; i < map.scale_list_size; i++) {
       Scale s = map.scale_list[i];
 
-      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
+      DrawModel(s.item ? s.model_full : s.model_empty, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);

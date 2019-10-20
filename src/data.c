@@ -32,12 +32,14 @@ void add_scale(Map *map, float x, float z, Vector3 dir) {
   map->scale_list[map->scale_list_size].progress = 5;
   map->scale_list[map->scale_list_size].pos = (Vector3){ x, 0.0f, z };
   map->scale_list[map->scale_list_size].dir = dir;
-  map->scale_list[map->scale_list_size].model = global_scale_model;
+  map->scale_list[map->scale_list_size].model_full = global_scale_full_model;
+  map->scale_list[map->scale_list_size].model_empty = global_scale_empty_model;
   float angle = atan2f(-dir.z, dir.x);
   Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
   Vector3 pos = map->scale_list[map->scale_list_size].pos;
   Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
-  map->scale_list[map->scale_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->scale_list[map->scale_list_size].model_full.transform = MatrixMultiply(rot, tran);
+  map->scale_list[map->scale_list_size].model_empty.transform = MatrixMultiply(rot, tran);
   map->scale_list_size++;
 }
 
@@ -76,7 +78,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -3.0, -3.0, dir);
   add_counter(map, -2.0, -3.0, dir);
   add_counter(map, -1.0, -3.0, dir);
-  add_counter(map, 0.0, -3.0, dir);
+  add_scale(map, 0.0, -3.0, dir);
   add_counter(map, 1.0, -3.0, dir);
   add_centrifuge(map, 2.0, -3.0, dir);
   add_counter(map, 3.0, -3.0, dir);
@@ -96,7 +98,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -3.0, 3.0, dir);
   add_counter(map, -2.0, 3.0, dir);
   add_counter(map, -1.0, 3.0, dir);
-  add_scale(map, 0.0, 3.0, dir);
+  add_counter(map, 0.0, 3.0, dir);
   add_cauldron(map, 1.0, 3.0, dir);
   add_cauldron(map, 2.0, 3.0, dir);
   add_cauldron(map, 3.0, 3.0, dir);

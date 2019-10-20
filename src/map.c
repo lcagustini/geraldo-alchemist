@@ -12,7 +12,7 @@ bool collides_with_map(Map map, int player_id) {
   }
 
   for (int i = 0; i < map.scale_list_size; i++) {
-    BoundingBox bbox = MeshBoundingBox(map.scale_list[i].model.meshes[0]);
+    BoundingBox bbox = MeshBoundingBox(map.scale_list[i].model_full.meshes[0]);
 
     bbox.min = Vector3Add(bbox.min, map.scale_list[i].pos);
     bbox.max = Vector3Add(bbox.max, map.scale_list[i].pos);
@@ -109,7 +109,7 @@ int get_aimed_scale(Player *p, Map *map, float *nearest_dist) {
   int nearest = -1;
   *nearest_dist = 999999.0f;
   for (int i = 0; i < map->scale_list_size; i++) {
-    RayHitInfo hit = GetCollisionRayModel(ray, map->scale_list[i].model);
+    RayHitInfo hit = GetCollisionRayModel(ray, map->scale_list[i].model_full);
     if (hit.hit) {
       if (hit.distance < *nearest_dist) {
         nearest = i;
