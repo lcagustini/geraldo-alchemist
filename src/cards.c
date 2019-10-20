@@ -31,7 +31,7 @@ bool remove_card(GUI *gui, ItemType product) {
       gui->cards_width -= get_card_width(gui->cards[i]) + CARD_PADDING;
       gui->cards_len--;
       for (int j = i; j < gui->cards_len; j++) {
-        gui->cards[j+1].pos.x -= get_card_width(gui->cards[j]);
+        gui->cards[j+1].pos.x -= get_card_width(gui->cards[j]) + CARD_PADDING;
         gui->cards[j] = gui->cards[j+1];
       }
       return true;
@@ -91,7 +91,7 @@ void generate_recipe(GUI *gui) {
 bool consume_recipe(ItemType item) {
   for (int i = global_wanted_items_start; ; i = (i+1)%MAX_WANTED_ITEMS) {
     if (i == global_wanted_items_end) break;
-    
+
     if (item == global_wanted_items[i]) {
       global_wanted_items[i] = global_wanted_items[global_wanted_items_start];
       global_wanted_items_start++;

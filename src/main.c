@@ -9,9 +9,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define SCREEN_WIDTH 1600
-#define SCREEN_HEIGHT 900
-
 #define CARD_SIZE 50
 #define INGREDIENT_CARD_SIZE CARD_SIZE/2
 #define CARD_PADDING 5
@@ -22,7 +19,7 @@
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
 #define PLAYER_SPEED 5.0f
 
-#define FLOOR_SIZE 2.0f
+#define FLOOR_SIZE 2.6f
 
 #define MAX_WANTED_ITEMS 8
 
@@ -44,21 +41,29 @@
 
 #include "data.h"
 
-Model global_counter_model;
 Model global_character_model;
+
+Model global_counter_model;
 Model global_scale_empty_model;
 Model global_scale_full_model;
 Model global_cauldron_model;
 Model global_centrifuge_open_model;
 Model global_centrifuge_closed_model;
 Model global_masher_model;
+
+Model global_chest_model;
+Model global_delivery_model;
+Model global_trashcan_model;
+
 Model global_red_potion_model;
 Model global_blue_potion_model;
 Model global_yellow_potion_model;
+
 Model global_red_stone_model;
 Model global_yellow_stone_model;
 Model global_green_stone_model;
 Model global_purple_stone_model;
+
 Model global_crystal_model;
 Model global_bone_model;
 Model global_white_powder_model;
@@ -68,6 +73,7 @@ Model global_blue_powder_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
+
 Model global_flower_model;
 
 PotionProcess global_potion_process_list[] = {
@@ -213,8 +219,9 @@ for_continue: ;
 int main(void) {
   float recipe_generation_timer = RECIPE_GENERATION_TIMER;
 
-  SetConfigFlags(FLAG_MSAA_4X_HINT);
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+  SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_MSAA_4X_HINT);
+
+  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "geraldo alchemist");
 
   global_flower_model = LoadModel("assets/flor.obj");
   SetMaterialTexture(&global_flower_model.materials[0], MAP_DIFFUSE,
@@ -411,17 +418,15 @@ int main(void) {
     global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
     global_item_models[IT_GARBAGE_BOTTLE] = global_crystal_model;
 
-    global_item_models[IT_RED_POTION] = global_crystal_model;
-    global_item_models[IT_YELLOW_POTION] = global_crystal_model;
+    global_item_models[IT_RED_POTION] = global_red_potion_model;
+    global_item_models[IT_YELLOW_POTION] = global_yellow_potion_model;
     global_item_models[IT_BLACK_POTION] = global_crystal_model;
 
     global_item_models[IT_PINK_POTION] = global_crystal_model;
-    global_item_models[IT_BLUE_POTION] = global_crystal_model;
-
-    global_item_models[IT_BOTTLED_ITEMS] = global_crystal_model;
+    global_item_models[IT_BLUE_POTION] = global_blue_potion_model;
 
     global_item_models[IT_FLOWER] = global_flower_model;
-    global_item_models[IT_RED_ROCK] = global_crystal_model;
+    global_item_models[IT_RED_ROCK] = global_red_stone_model;
     global_item_models[IT_MUSHROOM] = global_crystal_model;
     global_item_models[IT_BLUE_CRYSTAL] = global_blue_crystal_model;
     global_item_models[IT_BONE] = global_bone_model;
@@ -432,7 +437,7 @@ int main(void) {
     global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
     global_item_models[IT_WHITE_POWDER] = global_white_powder_model;
     global_item_models[IT_GREEN_POWDER] = global_crystal_model;
-    global_item_models[IT_SMALL_RED_ROCK] = global_crystal_model;
+    global_item_models[IT_SMALL_RED_ROCK] = global_red_stone_model;
     global_item_models[IT_SMALL_BONE] = global_crystal_model;
 
     global_item_models[IT_RED_CRYSTAL] = global_red_crystal_model;
@@ -482,8 +487,8 @@ int main(void) {
   add_available_recipes(IT_WHITE_POWDER);
 
   Camera3D camera = { 0 };
-  camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
-  camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+  camera.position = (Vector3){ 0.0f, 13.0f, 13.0f };  // Camera position
+  camera.target = (Vector3){ 0.0f, 0.0f, 2.0f };      // Camera looking at point
   camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
   camera.fovy = 45.0f;                                // Camera field-of-view Y
   camera.type = CAMERA_PERSPECTIVE;                   // Camera mode type
@@ -698,7 +703,7 @@ int main(void) {
       }
     }
 
-    DrawFPS(SCREEN_WIDTH-80, 10);
+    DrawFPS(GetScreenWidth()-80, 10);
 
     EndDrawing();
   }
