@@ -99,8 +99,9 @@ void action_button(Map *map, Player *player) {
   nearest[DT_CENTRIFUGE] = get_aimed_centrifuge(player, map, &nearest_dist[DT_CENTRIFUGE]);
   nearest[DT_MASHER] = get_aimed_masher(player, map, &nearest_dist[DT_MASHER]);
   nearest[DT_CHEST] = get_aimed_chest(player, map, &nearest_dist[DT_CHEST]);
+  nearest[DT_DELIVERY] = get_aimed_delivery(player, map, &nearest_dist[DT_DELIVERY]);
 
-  int nearest_id = minf(nearest_dist, 6);
+  int nearest_id = minf(nearest_dist, 7);
 
   if (nearest_dist[nearest_id] > MIN_RANGE_TO_USE_DEVICE) {
     if (player->item) {
@@ -245,6 +246,12 @@ void action_button(Map *map, Player *player) {
       puts("chest");
       if (!player->item) {
         player->item = map->chest_list[nearest[DT_CHEST]].item;
+      }
+      break;
+    case DT_DELIVERY:
+      puts("delivery");
+      if (player->item) {
+        player->item = IT_UNINITIALIZED;
       }
       break;
     default:

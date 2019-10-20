@@ -50,6 +50,7 @@ Model global_red_potion_model;
 Model global_blue_potion_model;
 Model global_yellow_potion_model;
 Model global_chest_model;
+Model global_delivery_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -203,6 +204,11 @@ int main(void) {
     LoadTexture("assets/chest_text.png"));
   GenTextureMipmaps(&global_chest_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  global_delivery_model = LoadModel("assets/delivery.obj");
+  SetMaterialTexture(&global_delivery_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/delivery_text.png"));
+  GenTextureMipmaps(&global_delivery_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   global_character_model = LoadModel("assets/personagem.obj");
   //Texture2D texture = LoadTexture("assets/balcao_text.png");
   //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
@@ -223,6 +229,7 @@ int main(void) {
   global_centrifuge_closed_model.materials[0].shader = shader;
   global_masher_model.materials[0].shader = shader;
   global_chest_model.materials[0].shader = shader;
+  global_delivery_model.materials[0].shader = shader;
   floor_model.materials[0].shader = shader;
   global_red_potion_model.materials[0].shader = shader;
   global_blue_potion_model.materials[0].shader = shader;
@@ -399,6 +406,13 @@ int main(void) {
       Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
       //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
       DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
+    }
+
+    // draw deliveries
+    for (int i = 0; i < map.delivery_list_size; i++) {
+      Delivery s = map.delivery_list[i];
+
+      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
     }
 
     // draw cauldrons
