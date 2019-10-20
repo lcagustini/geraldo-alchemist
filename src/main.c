@@ -58,6 +58,8 @@ Model global_trashcan_model;
 Model global_red_potion_model;
 Model global_blue_potion_model;
 Model global_yellow_potion_model;
+Model global_garbage_bottle_model;
+Model global_empty_bottle_model;
 
 Model global_red_stone_model;
 Model global_yellow_stone_model;
@@ -322,6 +324,18 @@ int main(void) {
   GenTextureMipmaps(&global_blue_potion_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_blue_potion_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
+  global_garbage_bottle_model = LoadModel("assets/yellow_potion.obj");
+  SetMaterialTexture(&global_garbage_bottle_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/garbage_bottle_text.png"));
+  GenTextureMipmaps(&global_garbage_bottle_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_garbage_bottle_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
+  global_empty_bottle_model = LoadModel("assets/yellow_potion.obj");
+  SetMaterialTexture(&global_empty_bottle_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/empty_bottle_text.png"));
+  GenTextureMipmaps(&global_empty_bottle_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_empty_bottle_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
   global_yellow_potion_model = LoadModel("assets/yellow_potion.obj");
   SetMaterialTexture(&global_yellow_potion_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/yellow_potion_text.png"));
@@ -409,6 +423,8 @@ int main(void) {
   global_red_potion_model.materials[0].shader = shader;
   global_blue_potion_model.materials[0].shader = shader;
   global_yellow_potion_model.materials[0].shader = shader;
+  global_empty_bottle_model.materials[0].shader = shader;
+  global_garbage_bottle_model.materials[0].shader = shader;
   global_red_stone_model.materials[0].shader = shader;
   global_yellow_stone_model.materials[0].shader = shader;
   global_green_stone_model.materials[0].shader = shader;
@@ -425,8 +441,8 @@ int main(void) {
   global_mushroom_model.materials[0].shader = shader;
 
   {
-    global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
-    global_item_models[IT_GARBAGE_BOTTLE] = global_crystal_model;
+    global_item_models[IT_EMPTY_BOTTLE] = global_empty_bottle_model;
+    global_item_models[IT_GARBAGE_BOTTLE] = global_garbage_bottle_model;
 
     global_item_models[IT_RED_POTION] = global_red_potion_model;
     global_item_models[IT_YELLOW_POTION] = global_yellow_potion_model;
