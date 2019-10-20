@@ -1,5 +1,5 @@
 #define MAX_COUNTERS 50
-#define MAX_SCALE 50
+#define MAX_DEVICES 50
 #define MAX_ITEMS 50
 
 #define MAX_INGREDIENTS 5
@@ -16,6 +16,8 @@ typedef enum {
   IT_INGREDIENT2_POWDER,
   IT_INGREDIENT3_SMALL,
   IT_INGREDIENT4_SMALL,
+
+  IT_INGREDIENT_COOKED_3_4,
 
   IT_GARBAGE,
 
@@ -68,6 +70,15 @@ typedef struct {
 typedef struct {
   Vector3 pos;
   Vector3 dir;
+  ItemType items[MAX_INGREDIENTS];
+  int items_size;
+  float progress;
+  Model model;
+} Cauldron;
+
+typedef struct {
+  Vector3 pos;
+  Vector3 dir;
   ItemType item;
   float item_pickup_cooldown; // less than 0 = good to go
 
@@ -78,7 +89,10 @@ typedef struct {
 } Player;
 
 typedef struct {
-  Scale scale_list[MAX_SCALE];
+  Cauldron cauldron_list[MAX_DEVICES];
+  int cauldron_list_size;
+
+  Scale scale_list[MAX_DEVICES];
   int scale_list_size;
 
   Counter counter_list[MAX_COUNTERS];

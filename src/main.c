@@ -31,6 +31,7 @@
 Model global_counter_model;
 Model global_character_model;
 Model global_scale_model;
+Model global_cauldron_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -52,10 +53,16 @@ PotionProcess global_potion_process_list[] = {
     .after = IT_INGREDIENT3_SMALL
   },
   {
-    .before = {IT_INGREDIENT2},
+    .before = {IT_INGREDIENT4},
     .before_len = 1,
     .process = DT_SCALE,
     .after = IT_INGREDIENT4_SMALL,
+  },
+  {
+    .before = {IT_INGREDIENT3_SMALL, IT_INGREDIENT4_SMALL},
+    .before_len = 2,
+    .process = DT_CAULDRON,
+    .after = IT_INGREDIENT_COOKED_3_4,
   }
 };
 int global_potion_process_list_len;
@@ -72,6 +79,8 @@ Color global_item_colors[] = {
   GOLD,
   DARKPURPLE,
   MAROON,
+
+  PINK,
 
   BLACK
 };
@@ -107,9 +116,14 @@ int main(void) {
   GenTextureMipmaps(&global_scale_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   global_counter_model = LoadModel("assets/balcao.obj");
-  Texture2D texture = LoadTexture("assets/balcao_text.png");
-  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE, texture);
+  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/balcao_text.png"));
   GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_cauldron_model = LoadModel("assets/cauldron.obj");
+  SetMaterialTexture(&global_cauldron_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/cauldron_text.png"));
+  GenTextureMipmaps(&global_cauldron_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   global_character_model = LoadModel("assets/personagem.obj");
   //Texture2D texture = LoadTexture("assets/balcao_text.png");
@@ -174,11 +188,21 @@ int main(void) {
             p->current_action = DT_NONE;
           }
           break;
+        case DT_CAULDRON:
+          map.cauldron_list[p->current_action_id].progress -= GetFrameTime();
+          if (map.cauldron_list[p->current_action_id].progress <= 0) {
+            map.cauldron_list[p->current_action_id].items[0] =
+              get_recipe_result(map.cauldron_list[p->current_action_id].items,
+                                map.cauldron_list[p->current_action_id].items_size,
+                                DT_CAULDRON);
+            map.cauldron_list[p->current_action_id].items_size = 0;
+            p->current_action = DT_NONE;
+          }
+          break;
         default:
           break;
       }
     }
-
 
     // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {
@@ -201,6 +225,13 @@ int main(void) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
       }
+    }
+
+    // draw cauldrons
+    for (int i = 0; i < map.cauldron_list_size; i++) {
+      Cauldron c = map.cauldron_list[i];
+
+      DrawModel(c.model, Vector3Zero(), 1.0f, WHITE);
     }
 
     // draw dropped items

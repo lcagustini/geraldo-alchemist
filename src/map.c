@@ -10,6 +10,7 @@ bool collides_with_map(Map map, int player_id) {
       return true;
     }
   }
+
   for (int i = 0; i < map.scale_list_size; i++) {
     BoundingBox bbox = MeshBoundingBox(map.scale_list[i].model.meshes[0]);
 
@@ -21,6 +22,19 @@ bool collides_with_map(Map map, int player_id) {
       return true;
     }
   }
+
+  for (int i = 0; i < map.cauldron_list_size; i++) {
+    BoundingBox bbox = MeshBoundingBox(map.cauldron_list[i].model.meshes[0]);
+
+    bbox.min = Vector3Add(bbox.min, map.cauldron_list[i].pos);
+    bbox.max = Vector3Add(bbox.max, map.cauldron_list[i].pos);
+
+    DrawBoundingBox(bbox, BLUE);
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -36,11 +50,29 @@ bool collides_with_player(Map map, int player_id) {
   return false;
 }
 
+int get_aimed_cauldron(Player *p, Map *map, float *nearest_dist) {
+  assert(nearest_dist);
+
+  Ray ray = { p->pos, p->dir };
+  int nearest = -1;
+  *nearest_dist = 999999.0f;
+  for (int i = 0; i < map->cauldron_list_size; i++) {
+    RayHitInfo hit = GetCollisionRayModel(ray, map->cauldron_list[i].model);
+    if (hit.hit) {
+      if (hit.distance < *nearest_dist) {
+        nearest = i;
+        *nearest_dist = hit.distance;
+      }
+    }
+  }
+
+  return nearest;
+}
+
 int get_aimed_scale(Player *p, Map *map, float *nearest_dist) {
   assert(nearest_dist);
 
   Ray ray = { p->pos, p->dir };
-  Vector3 collision_point = { 0 };
   int nearest = -1;
   *nearest_dist = 999999.0f;
   for (int i = 0; i < map->scale_list_size; i++) {
@@ -60,7 +92,6 @@ int get_aimed_counter(Player *p, Map *map, float *nearest_dist) {
   assert(nearest_dist);
 
   Ray ray = { p->pos, p->dir };
-  Vector3 collision_point = { 0 };
   int nearest = -1;
   *nearest_dist = 999999.0f;
   for (int i = 0; i < map->counter_list_size; i++) {

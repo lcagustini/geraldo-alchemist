@@ -12,13 +12,13 @@ int minf(float arr[], int len) {
   return min_i;
 }
 
-void swap(int *xp, int *yp) {
+void swap(ItemType *xp, ItemType *yp) {
   int temp = *xp;
   *xp = *yp;
   *yp = temp;
 }
 
-void sort(int arr[], int n) {
+void sort(ItemType arr[], int n) {
   int i, j;
   for (i = 0; i < n-1; i++) {
     for (j = 0; j < n-i-1; j++) {

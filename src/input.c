@@ -95,6 +95,7 @@ void action_button(Map *map, Player *player) {
 
   nearest[DT_COUNTER] = get_aimed_counter(player, map, &nearest_dist[DT_COUNTER]);
   nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
+  nearest[DT_CAULDRON] = get_aimed_cauldron(player, map, &nearest_dist[DT_CAULDRON]);
 
   int nearest_id = minf(nearest_dist, 2);
 
@@ -139,6 +140,7 @@ void action_button(Map *map, Player *player) {
 
   switch (nearest_id) {
     case DT_COUNTER:
+      puts("counter");
       if (!map->counter_list[nearest[DT_COUNTER]].item && player->item) { // try to put item on the counter
         map->counter_list[nearest[DT_COUNTER]].item = player->item;
         player->item = IT_UNINITIALIZED;
@@ -156,6 +158,7 @@ void action_button(Map *map, Player *player) {
       }
       break;
     case DT_SCALE:
+      puts("scale");
       if (!map->scale_list[nearest[DT_SCALE]].item && player->item) {
         map->scale_list[nearest[DT_SCALE]].item = player->item;
         map->scale_list[nearest[DT_SCALE]].progress = 5.0f;
@@ -173,6 +176,31 @@ void action_button(Map *map, Player *player) {
         else {
           player->item = map->scale_list[player->current_action_id].item;
           map->scale_list[player->current_action_id].item = IT_UNINITIALIZED;
+
+          player->current_action = DT_NONE;
+        }
+      }
+      break;
+    case DT_CAULDRON:
+      puts("cauldron");
+      if (!(map->cauldron_list[nearest[DT_CAULDRON]].items_size < MAX_INGREDIENTS) &&
+          player->item) {
+        map->cauldron_list[nearest[DT_CAULDRON]].items[map->cauldron_list[nearest[DT_CAULDRON]].items_size++] = player->item;
+        map->cauldron_list[nearest[DT_CAULDRON]].progress = 5.0f;
+
+        player->item = IT_UNINITIALIZED;
+
+        player->current_action = DT_CAULDRON;
+        player->current_action_id = nearest[DT_CAULDRON];
+      }
+      else if (map->cauldron_list[nearest[DT_CAULDRON]].items_size && !player->item) {
+        if (map->cauldron_list[player->current_action_id].progress > 0) {
+          player->current_action = DT_CAULDRON;
+          player->current_action_id = nearest[DT_CAULDRON];
+        }
+        else {
+          player->item = map->cauldron_list[player->current_action_id].items[0];
+          map->cauldron_list[player->current_action_id].items_size = 0;
 
           player->current_action = DT_NONE;
         }
