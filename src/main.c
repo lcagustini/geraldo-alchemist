@@ -88,7 +88,7 @@ PotionProcess global_potion_process_list[] = {
 int global_potion_process_list_len;
 
 Color global_item_colors[] = {
-  MAGENTA,
+  WHITE,
 
   GREEN,
   YELLOW,
