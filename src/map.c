@@ -1,7 +1,23 @@
-bool collides_with_counters(Map map, int player_id) {
+bool collides_with_map(Map map, int player_id) {
   for (int i = 0; i < map.counter_list_size; i++) {
-    if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]),
-                            GET_COUNTER_BBOX(map.counter_list[i]))) {
+    BoundingBox bbox = MeshBoundingBox(map.counter_list[i].model.meshes[0]);
+
+    bbox.min = Vector3Add(bbox.min, map.counter_list[i].pos);
+    bbox.max = Vector3Add(bbox.max, map.counter_list[i].pos);
+
+    DrawBoundingBox(bbox, BLUE);
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
+      return true;
+    }
+  }
+  for (int i = 0; i < map.scale_list_size; i++) {
+    BoundingBox bbox = MeshBoundingBox(map.scale_list[i].model.meshes[0]);
+
+    bbox.min = Vector3Add(bbox.min, map.scale_list[i].pos);
+    bbox.max = Vector3Add(bbox.max, map.scale_list[i].pos);
+
+    DrawBoundingBox(bbox, BLUE);
+    if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
       return true;
     }
   }
@@ -28,15 +44,14 @@ int get_aimed_scale(Player *p, Map *map, float *nearest_dist) {
   int nearest = -1;
   *nearest_dist = 999999.0f;
   for (int i = 0; i < map->scale_list_size; i++) {
-    if (CheckCollisionRaySphereEx(ray, map->scale_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
-      float distance = Vector3Distance(collision_point, p->pos);
-      if (distance < *nearest_dist) {
+    RayHitInfo hit = GetCollisionRayModel(ray, map->scale_list[i].model);
+    if (hit.hit) {
+      if (hit.distance < *nearest_dist) {
         nearest = i;
-        *nearest_dist = distance;
+        *nearest_dist = hit.distance;
       }
     }
   }
-  //printf("nearest_dist %f\n", *nearest_dist);
 
   return nearest;
 }
@@ -49,15 +64,14 @@ int get_aimed_counter(Player *p, Map *map, float *nearest_dist) {
   int nearest = -1;
   *nearest_dist = 999999.0f;
   for (int i = 0; i < map->counter_list_size; i++) {
-    if (CheckCollisionRaySphereEx(ray, map->counter_list[i].pos, 1.0f, &collision_point)) { // migue pq n tem isso pra BBOX
-      float distance = Vector3Distance(collision_point, p->pos);
-      if (distance < *nearest_dist) {
+    RayHitInfo hit = GetCollisionRayModel(ray, map->counter_list[i].model);
+    if (hit.hit) {
+      if (hit.distance < *nearest_dist) {
         nearest = i;
-        *nearest_dist = distance;
+        *nearest_dist = hit.distance;
       }
     }
   }
-  //printf("nearest_dist %f\n", *nearest_dist);
 
   return nearest;
 }

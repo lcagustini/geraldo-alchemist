@@ -15,6 +15,7 @@
 #define CARD_PADDING 5
 
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
+#define PLAYER_SPEED 5.0f
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
@@ -28,6 +29,7 @@
 #include "data.h"
 
 Model global_counter_model;
+Model global_character_model;
 Model global_scale_model;
 
 PotionProcess global_potion_process_list[] = {
@@ -99,15 +101,20 @@ int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
-  global_counter_model = LoadModel("assets/balcao.obj");
-  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE,
-      LoadTexture("assets/balcao_text.png"));
-  GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
-
   global_scale_model = LoadModel("assets/scale.obj");
   SetMaterialTexture(&global_scale_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/scale_text.png"));
   GenTextureMipmaps(&global_scale_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_counter_model = LoadModel("assets/balcao.obj");
+  Texture2D texture = LoadTexture("assets/balcao_text.png");
+  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE, texture);
+  GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_character_model = LoadModel("assets/personagem.obj");
+  //Texture2D texture = LoadTexture("assets/balcao_text.png");
+  //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
+  //GenTextureMipmaps(&global_character_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   Shader shader = LoadShader("src/lighting.vs", "src/lighting.fs");
   shader.locs[LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
@@ -117,6 +124,7 @@ int main(void) {
 
   global_counter_model.materials[0].shader = shader;
   global_scale_model.materials[0].shader = shader;
+  global_character_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -126,7 +134,9 @@ int main(void) {
 
   init_data(&map, &gui);
   map.players[0].pos.x = -1;
+  map.players[0].model = global_character_model;
   map.players[1].pos.x = 1;
+  map.players[1].model = global_character_model;
   map.player_count = 2;
 
   global_potion_process_list_len = sizeof(global_potion_process_list)/sizeof(PotionProcess);
@@ -140,6 +150,12 @@ int main(void) {
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
   while (!WindowShouldClose()) {
+    BeginDrawing();
+
+    ClearBackground(GRAY);
+
+    BeginMode3D(camera);
+
     for (int i = 0; i < map.player_count; i++) {
       Player *p = &map.players[i];
 
@@ -163,17 +179,12 @@ int main(void) {
       }
     }
 
-    BeginDrawing();
-
-    ClearBackground(GRAY);
-
-    BeginMode3D(camera);
 
     // draw counters
     for (int i = 0; i < map.counter_list_size; i++) {
       Counter c = map.counter_list[i];
 
-      DrawModel(c.model, c.pos, 1.0f, WHITE);
+      DrawModel(c.model, Vector3Zero(), 1.00f, WHITE);
 
       if (c.item) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
@@ -185,7 +196,7 @@ int main(void) {
     for (int i = 0; i < map.scale_list_size; i++) {
       Scale s = map.scale_list[i];
 
-      DrawModel(s.model, s.pos, 1.0f, WHITE);
+      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
@@ -202,8 +213,9 @@ int main(void) {
     for (int i = 0; i < map.player_count; i++) {
       Player p = map.players[i];
 
-      DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
-      DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      //DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
+      //DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      DrawModel(p.model, p.pos, 0.5f, WHITE);
       if (p.item) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);

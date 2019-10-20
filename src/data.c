@@ -1,10 +1,13 @@
 void add_counter(Map *map, float x, float z, Vector3 dir) {
   map->counter_list[map->counter_list_size].item = IT_UNINITIALIZED;
   map->counter_list[map->counter_list_size].pos = (Vector3){ x, 0.0f, z };
-  map->counter_list[map->counter_list_size].dir = dir;
   map->counter_list[map->counter_list_size].model = global_counter_model;
   float angle = atan2f(-dir.z, dir.x);
-  map->counter_list[map->counter_list_size].model.transform = MatrixRotate((Vector3){0,1,0}, angle);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->counter_list[map->counter_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  Matrix scale = MatrixScale(1.1, 1.0, 1.1);
+  map->counter_list[map->counter_list_size].model.transform = MatrixMultiply(scale, MatrixMultiply(rot, tran));
   map->counter_list_size++;
 }
 
@@ -15,7 +18,10 @@ void add_scale(Map *map, float x, float z, Vector3 dir) {
   map->scale_list[map->scale_list_size].dir = dir;
   map->scale_list[map->scale_list_size].model = global_scale_model;
   float angle = atan2f(-dir.z, dir.x);
-  map->scale_list[map->scale_list_size].model.transform = MatrixRotate((Vector3){0,1,0}, angle);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->scale_list[map->scale_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  map->scale_list[map->scale_list_size].model.transform = MatrixMultiply(rot, tran);
   map->scale_list_size++;
 }
 
@@ -27,15 +33,14 @@ void init_data(Map *map, GUI *gui) {
   Vector3 dir;
 
   dir = (Vector3){ 1.0f, 0.0f, 0.0f };
-  add_counter(map, -5.0, -3.0, dir);
-  add_counter(map, -5.0, -2.0, dir);
-  add_counter(map, -5.0, -1.0, dir);
-  add_counter(map, -5.0, 0.0, dir);
-  add_counter(map, -5.0, 1.0, dir);
-  add_counter(map, -5.0, 2.0, dir);
-  add_counter(map, -5.0, 3.0, dir);
+  add_counter(map, -5.028, -2.0, dir);
+  add_counter(map, -5.028, -1.0, dir);
+  add_counter(map, -5.028, 0.0, dir);
+  add_counter(map, -5.028, 1.0, dir);
+  add_counter(map, -5.028, 2.0, dir);
 
   dir = (Vector3){ 0.0f, 0.0f, 1.0f };
+  add_counter(map, -5.0, -3.0, dir);
   add_counter(map, -4.0, -3.0, dir);
   add_counter(map, -3.0, -3.0, dir);
   add_counter(map, -2.0, -3.0, dir);
@@ -45,26 +50,27 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, 2.0, -3.0, dir);
   add_counter(map, 3.0, -3.0, dir);
   add_counter(map, 4.0, -3.0, dir);
+  add_counter(map, 5.0, -3.0, dir);
 
   dir = (Vector3){ -1.0f, 0.0f, 0.0f };
-  add_counter(map, 5.0, -3.0, dir);
-  add_counter(map, 5.0, -2.0, dir);
-  add_scale(map, 5.0, -1.0, dir);
-  add_counter(map, 5.0, 0.0, dir);
-  add_counter(map, 5.0, 1.0, dir);
-  add_counter(map, 5.0, 2.0, dir);
-  add_counter(map, 5.0, 3.0, dir);
+  add_counter(map, 5.028, -2.0, dir);
+  add_counter(map, 5.028, -1.0, dir);
+  add_counter(map, 5.028, 0.0, dir);
+  add_counter(map, 5.028, 1.0, dir);
+  add_counter(map, 5.028, 2.0, dir);
 
   dir = (Vector3){ 0.0f, 0.0f, -1.0f };
+  add_counter(map, -5.0, 3.0, dir);
   add_counter(map, -4.0, 3.0, dir);
   add_counter(map, -3.0, 3.0, dir);
   add_counter(map, -2.0, 3.0, dir);
   add_counter(map, -1.0, 3.0, dir);
-  add_counter(map, 0.0, 3.0, dir);
+  add_scale(map, 0.0, 3.0, dir);
   add_counter(map, 1.0, 3.0, dir);
   add_counter(map, 2.0, 3.0, dir);
   add_counter(map, 3.0, 3.0, dir);
   add_counter(map, 4.0, 3.0, dir);
+  add_counter(map, 5.0, 3.0, dir);
 
   add_item_to_counter(&map->counter_list[4], IT_INGREDIENT1);
   add_item_to_counter(&map->counter_list[7], IT_INGREDIENT2);

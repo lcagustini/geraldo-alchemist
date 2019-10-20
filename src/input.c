@@ -48,9 +48,9 @@ KeyboardKey get_key_for_player(int player_id, Button button) {
 
 void up_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->z -= 1.0f;
-  map->players[player_id].pos.z -= 0.1f;
-  if (collides_with_counters(*map, player_id) ||
-      collides_with_player(*map, player_id)) map->players[player_id].pos.z += 0.1f;
+  map->players[player_id].pos.z -= PLAYER_SPEED * GetFrameTime();
+  if (collides_with_map(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.z += PLAYER_SPEED * GetFrameTime();
 
   if (map->players[player_id].item_pickup_cooldown >= 0) return;
   map->players[player_id].current_action = DT_NONE;
@@ -58,9 +58,9 @@ void up_button(Map *map, int player_id, Vector3 *new_dir) {
 
 void down_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->z += 1.0f;
-  map->players[player_id].pos.z += 0.1f;
-  if (collides_with_counters(*map, player_id) ||
-      collides_with_player(*map, player_id)) map->players[player_id].pos.z -= 0.1f;
+  map->players[player_id].pos.z += PLAYER_SPEED * GetFrameTime();
+  if (collides_with_map(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.z -= PLAYER_SPEED * GetFrameTime();
 
   if (map->players[player_id].item_pickup_cooldown >= 0) return;
   map->players[player_id].current_action = DT_NONE;
@@ -68,9 +68,9 @@ void down_button(Map *map, int player_id, Vector3 *new_dir) {
 
 void left_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->x -= 1.0f;
-  map->players[player_id].pos.x -= 0.1f;
-  if (collides_with_counters(*map, player_id) ||
-      collides_with_player(*map, player_id)) map->players[player_id].pos.x += 0.1f;
+  map->players[player_id].pos.x -= PLAYER_SPEED * GetFrameTime();
+  if (collides_with_map(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.x += PLAYER_SPEED * GetFrameTime();
 
   if (map->players[player_id].item_pickup_cooldown >= 0) return;
   map->players[player_id].current_action = DT_NONE;
@@ -78,9 +78,9 @@ void left_button(Map *map, int player_id, Vector3 *new_dir) {
 
 void right_button(Map *map, int player_id, Vector3 *new_dir) {
   new_dir->x += 1.0f;
-  map->players[player_id].pos.x += 0.1f;
-  if (collides_with_counters(*map, player_id) ||
-      collides_with_player(*map, player_id)) map->players[player_id].pos.x -= 0.1f;
+  map->players[player_id].pos.x += PLAYER_SPEED * GetFrameTime();
+  if (collides_with_map(*map, player_id) ||
+      collides_with_player(*map, player_id)) map->players[player_id].pos.x -= PLAYER_SPEED * GetFrameTime();
 
   if (map->players[player_id].item_pickup_cooldown >= 0) return;
   map->players[player_id].current_action = DT_NONE;
@@ -186,6 +186,7 @@ void action_button(Map *map, Player *player) {
 void keyboard_input(Map *map, int player_id) {
   Vector3 new_dir = { 0.0f, 0.0f, 0.0f };
 
+  Vector3 old_position = map->players[player_id].pos;
   if (IsKeyDown(get_key_for_player(player_id, B_UP))) {
     up_button(map, player_id, &new_dir);
   }
@@ -198,11 +199,19 @@ void keyboard_input(Map *map, int player_id) {
   if (IsKeyDown(get_key_for_player(player_id, B_RIGHT))) {
     right_button(map, player_id, &new_dir);
   }
+  Vector3 pos_offset = Vector3Subtract(map->players[player_id].pos, old_position);
+  if (Vector3Length(pos_offset) > PLAYER_SPEED * GetFrameTime()) {
+    map->players[player_id].pos = Vector3Add(old_position, Vector3Scale(Vector3Normalize(pos_offset), PLAYER_SPEED * GetFrameTime()));
+  }
+
+
   if (IsKeyDown(get_key_for_player(player_id, B_ACTION))) {
     action_button(map, &map->players[player_id]);
   }
 
   if (Vector3Length(new_dir)) {
     map->players[player_id].dir = Vector3Normalize(new_dir);
+    float angle = atan2f(-new_dir.z, new_dir.x);
+    map->players[player_id].model.transform = MatrixRotate((Vector3){0,1,0}, angle);
   }
 }

@@ -73,6 +73,8 @@ typedef struct {
 
   DeviceType current_action;
   int current_action_id;
+
+  Model model;
 } Player;
 
 typedef struct {
