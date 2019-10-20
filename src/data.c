@@ -28,7 +28,7 @@ void add_centrifuge(Map *map, float x, float z, Vector3 dir) {
 }
 
 void add_masher(Map *map, float x, float z, Vector3 dir) {
-  dir = Vector3Subtract(Vector3Zero(), dir);
+  dir.z = -dir.z;
   map->masher_list[map->masher_list_size].item = IT_UNINITIALIZED;
   map->masher_list[map->masher_list_size].progress = 5;
   map->masher_list[map->masher_list_size].pos = (Vector3){ x, 0.0f, z };
@@ -121,44 +121,82 @@ void init_data(Map *map, GUI *gui) {
   Vector3 dir;
 
   dir = (Vector3){ 1.0f, 0.0f, 0.0f };
-  add_counter(map, -5.028, -2.0, dir);
-  add_counter(map, -5.028, -1.0, dir);
-  add_counter(map, -5.028, 0.0, dir);
-  add_counter(map, -5.028, 1.0, dir);
-  add_counter(map, -5.028, 2.0, dir);
+  add_counter(map, -8.028, -4.0, dir);
+  add_counter(map, -8.028, -3.0, dir);
+  add_counter(map, -8.028, -2.0, dir);
+  add_scale(map, -8.028, -1.0, dir);
+  add_counter(map, -8.028, 0.0, dir);
+  add_scale(map, -8.028, 1.0, dir);
+  add_counter(map, -8.028, 2.0, dir);
+  add_scale(map, -8.028, 3.0, dir);
+  add_counter(map, -8.028, 4.0, dir);
+  add_counter(map, -8.028, 5.0, dir);
+  add_counter(map, -8.028, 6.0, dir);
 
   dir = (Vector3){ 0.0f, 0.0f, 1.0f };
-  add_counter(map, -5.0, -3.0, dir);
-  add_counter(map, -4.0, -3.0, dir);
-  add_counter(map, -3.0, -3.0, dir);
-  add_counter(map, -2.0, -3.0, dir);
-  add_counter(map, -1.0, -3.0, dir);
-  add_scale(map, 0.0, -3.0, dir);
-  add_counter(map, 1.0, -3.0, dir);
-  add_centrifuge(map, 2.0, -3.0, dir);
-  add_masher(map, 3.0, -3.0, dir);
-  add_counter(map, 4.0, -3.0, dir);
-  add_counter(map, 5.0, -3.0, dir);
+  add_counter(map, -7.0, -4.0, dir);
+  add_counter(map, -6.0, -4.0, dir);
+  add_counter(map, -5.0, -4.0, dir);
+  add_counter(map, -4.0, -4.0, dir);
+  add_counter(map, -3.0, -4.0, dir);
+  add_counter(map, -2.0, -4.0, dir);
+  add_counter(map, -1.0, -4.0, dir);
+  add_delivery(map, 0.0, -4.0, dir);
+  add_counter(map, 1.0, -4.0, dir);
+  add_counter(map, 2.0, -4.0, dir);
+  add_chest(map, 3.0, -4.0, dir, IT_BONE);
+  add_counter(map, 4.0, -4.0, dir);
+  add_counter(map, 5.0, -4.0, dir);
+  add_counter(map, 6.0, -4.0, dir);
+  add_counter(map, 7.0, -4.0, dir);
 
   dir = (Vector3){ -1.0f, 0.0f, 0.0f };
-  add_counter(map, 5.028, -2.0, dir);
-  add_trashcan(map, 5.028, -1.0, dir);
-  add_counter(map, 5.028, 0.0, dir);
-  add_counter(map, 5.028, 1.0, dir);
-  add_counter(map, 5.028, 2.0, dir);
+  add_counter(map, 8.028, -4.0, dir);
+  add_counter(map, 8.028, -3.0, dir);
+  add_counter(map, 8.028, -2.0, dir);
+  add_masher(map, 8.028, -1.0, dir);
+  add_counter(map, 8.028, 0.0, dir);
+  add_masher(map, 8.028, 1.0, dir);
+  add_counter(map, 8.028, 2.0, dir);
+  add_masher(map, 8.028, 3.0, dir);
+  add_counter(map, 8.028, 4.0, dir);
+  add_counter(map, 8.028, 5.0, dir);
+  add_counter(map, 8.028, 6.0, dir);
 
   dir = (Vector3){ 0.0f, 0.0f, -1.0f };
-  add_counter(map, -5.0, 3.0, dir);
-  add_counter(map, -4.0, 3.0, dir);
-  add_counter(map, -3.0, 3.0, dir);
-  add_chest(map, -2.0, 3.0, dir, IT_BONE);
-  add_counter(map, -1.0, 3.0, dir);
-  add_delivery(map, 0.0, 3.0, dir);
-  add_counter(map, 1.0, 3.0, dir);
-  add_cauldron(map, 2.0, 3.0, dir);
-  add_counter(map, 3.0, 3.0, dir);
-  add_counter(map, 4.0, 3.0, dir);
-  add_counter(map, 5.0, 3.0, dir);
+  add_counter(map, -7.0, 6.0, dir);
+  add_counter(map, -6.0, 6.0, dir);
+  add_counter(map, -5.0, 6.0, dir);
+  add_chest(map, -3.0, 6.0, dir, IT_MUSHROOM);
+  add_chest(map, -4.0, 6.0, dir, IT_BLUE_CRYSTAL);
+  add_counter(map, -2.0, 6.0, dir);
+  add_counter(map, -1.0, 6.0, dir);
+  add_trashcan(map, 0.0, 6.0, dir);
+  add_counter(map, 1.0, 6.0, dir);
+  add_counter(map, 2.0, 6.0, dir);
+  add_chest(map, 3.0, 6.0, dir, IT_FLOWER);
+  add_chest(map, 4.0, 6.0, dir, IT_RED_ROCK);
+  add_counter(map, 5.0, 6.0, dir);
+  add_counter(map, 6.0, 6.0, dir);
+  add_counter(map, 7.0, 6.0, dir);
+
+  dir = (Vector3){ 0.0f, 0.0f, -1.0f };
+  add_cauldron(map, 4.0, -1.0, dir);
+  dir = (Vector3){ 1.0f, 0.0f, 0.0f };
+  add_counter(map, 4.0, 0.0, dir);
+  add_counter(map, 4.0, 1.0, dir);
+  add_counter(map, 4.0, 2.0, dir);
+  dir = (Vector3){ 0.0f, 0.0f, 1.0f };
+  add_cauldron(map, 4.0, 3.0, dir);
+
+  dir = (Vector3){ 0.0f, 0.0f, -1.0f };
+  add_centrifuge(map, -4.0, -1.0, dir);
+  dir = (Vector3){ -1.0f, 0.0f, 0.0f };
+  add_counter(map, -4.0, 0.0, dir);
+  add_counter(map, -4.0, 1.0, dir);
+  add_counter(map, -4.0, 2.0, dir);
+  dir = (Vector3){ 0.0f, 0.0f, 1.0f };
+  add_centrifuge(map, -4.0, 3.0, dir);
 
   add_item_to_counter(&map->counter_list[2], IT_EMPTY_BOTTLE);
   //add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
