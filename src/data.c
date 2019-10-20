@@ -56,6 +56,19 @@ void add_chest(Map *map, float x, float z, Vector3 dir, ItemType item) {
   map->chest_list_size++;
 }
 
+void add_trashcan(Map *map, float x, float z, Vector3 dir) {
+  dir = Vector3Subtract(Vector3Zero(), dir);
+  map->trashcan_list[map->trashcan_list_size].pos = (Vector3){ x, 0.0f, z };
+  map->trashcan_list[map->trashcan_list_size].dir = dir;
+  map->trashcan_list[map->trashcan_list_size].model = global_trashcan_model;
+  float angle = atan2f(-dir.z, dir.x);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->trashcan_list[map->trashcan_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  map->trashcan_list[map->trashcan_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->trashcan_list_size++;
+}
+
 void add_delivery(Map *map, float x, float z, Vector3 dir) {
   dir = Vector3Subtract(Vector3Zero(), dir);
   map->delivery_list[map->delivery_list_size].pos = (Vector3){ x, 0.0f, z };
@@ -129,7 +142,7 @@ void init_data(Map *map, GUI *gui) {
 
   dir = (Vector3){ -1.0f, 0.0f, 0.0f };
   add_counter(map, 5.028, -2.0, dir);
-  add_counter(map, 5.028, -1.0, dir);
+  add_trashcan(map, 5.028, -1.0, dir);
   add_counter(map, 5.028, 0.0, dir);
   add_counter(map, 5.028, 1.0, dir);
   add_counter(map, 5.028, 2.0, dir);

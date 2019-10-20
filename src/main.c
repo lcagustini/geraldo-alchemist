@@ -55,6 +55,7 @@ Model global_green_stone_model;
 Model global_purple_stone_model;
 Model global_chest_model;
 Model global_delivery_model;
+Model global_trashcan_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -237,6 +238,11 @@ int main(void) {
     LoadTexture("assets/delivery_text.png"));
   GenTextureMipmaps(&global_delivery_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  global_trashcan_model = LoadModel("assets/trashcan.obj");
+  SetMaterialTexture(&global_trashcan_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/trashcan_text.png"));
+  GenTextureMipmaps(&global_trashcan_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   global_character_model = LoadModel("assets/personagem.obj");
   //Texture2D texture = LoadTexture("assets/balcao_text.png");
   //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
@@ -258,6 +264,7 @@ int main(void) {
   global_masher_model.materials[0].shader = shader;
   global_chest_model.materials[0].shader = shader;
   global_delivery_model.materials[0].shader = shader;
+  global_trashcan_model.materials[0].shader = shader;
   floor_model.materials[0].shader = shader;
   global_red_potion_model.materials[0].shader = shader;
   global_blue_potion_model.materials[0].shader = shader;
@@ -443,6 +450,13 @@ int main(void) {
     // draw deliveries
     for (int i = 0; i < map.delivery_list_size; i++) {
       Delivery s = map.delivery_list[i];
+
+      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
+    }
+
+    // draw trashcans
+    for (int i = 0; i < map.trashcan_list_size; i++) {
+      Trashcan s = map.trashcan_list[i];
 
       DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
     }

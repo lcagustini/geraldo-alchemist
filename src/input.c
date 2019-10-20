@@ -100,8 +100,9 @@ void action_button(Map *map, Player *player) {
   nearest[DT_MASHER] = get_aimed_masher(player, map, &nearest_dist[DT_MASHER]);
   nearest[DT_CHEST] = get_aimed_chest(player, map, &nearest_dist[DT_CHEST]);
   nearest[DT_DELIVERY] = get_aimed_delivery(player, map, &nearest_dist[DT_DELIVERY]);
+  nearest[DT_TRASHCAN] = get_aimed_trashcan(player, map, &nearest_dist[DT_TRASHCAN]);
 
-  int nearest_id = minf(nearest_dist, 7);
+  int nearest_id = minf(nearest_dist, 8);
 
   if (nearest_dist[nearest_id] > MIN_RANGE_TO_USE_DEVICE) {
     if (player->item) {
@@ -253,6 +254,10 @@ void action_button(Map *map, Player *player) {
       if (player->item) {
         player->item = IT_UNINITIALIZED;
       }
+      break;
+    case DT_TRASHCAN:
+      puts("trash");
+      player->item = IT_UNINITIALIZED;
       break;
     default:
       printf("%d\n", nearest_id);
