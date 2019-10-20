@@ -25,6 +25,22 @@ void add_card(GUI *gui, ItemType product, ItemType ingredient_list[5], int ingre
   gui->cards_len++;
 }
 
+bool remove_card(GUI *gui, ItemType product) {
+  for (int i = 0; i < gui->cards_len; i++) {
+    if (gui->cards[i].product == product) {
+      gui->cards_width -= get_card_width(gui->cards[i]) + CARD_PADDING;
+      gui->cards_len--;
+      for (int j = i; j < gui->cards_len; j++) {
+        gui->cards[j+1].pos.x -= get_card_width(gui->cards[j]);
+        gui->cards[j] = gui->cards[j+1];
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void add_available_recipes(ItemType a) {
   global_available_recipes[global_available_recipes_count] = a;
   global_available_recipes_count++;
