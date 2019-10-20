@@ -28,42 +28,108 @@
 #include "data.h"
 
 Model global_counter_model;
+Model global_scale_model;
 
+PotionProcess global_potion_process_list[] = {
+  {
+    .before = {IT_INGREDIENT1},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_INGREDIENT1_POWDER
+  },
+  {
+    .before = {IT_INGREDIENT2},
+    .before_len = 1,
+    .process = DT_MASHER,
+    .after = IT_INGREDIENT2_POWDER
+  },
+  {
+    .before = {IT_INGREDIENT3},
+    .before_len = 1,
+    .process = DT_SCALE,
+    .after = IT_INGREDIENT3_SMALL
+  },
+  {
+    .before = {IT_INGREDIENT2},
+    .before_len = 1,
+    .process = DT_SCALE,
+    .after = IT_INGREDIENT4_SMALL,
+  }
+};
+int global_potion_process_list_len;
+
+Color global_item_colors[] = {
+  MAGENTA,
+
+  GREEN,
+  YELLOW,
+  PURPLE,
+  RED,
+
+  DARKGREEN,
+  GOLD,
+  DARKPURPLE,
+  MAROON,
+
+  BLACK
+};
+
+#include "util.c"
 #include "cards.c"
 #include "data.c"
 #include "map.c"
 #include "input.c"
 
+ItemType get_recipe_result(ItemType input[], int input_len, DeviceType process) {
+  for (int j = 0; j < global_potion_process_list_len; j++) {
+    if (global_potion_process_list[j].process == process &&
+        global_potion_process_list[j].before_len == input_len) {
+      sort(global_potion_process_list[j].before, input_len);
+      sort(input, input_len);
+      for (int i = 0; i < input_len; i++) {
+        if (global_potion_process_list[j].before[i] != input[i]) return IT_GARBAGE;
+      }
+      return global_potion_process_list[j].after;
+    }
+  }
+  return IT_GARBAGE;
+}
+
 int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
-  global_counter_model = LoadModel("assets/balcao.obj"); 
-  //Model global_counter_model = LoadModel("assets/balcao.iqm"); 
-  Texture2D texture = LoadTexture("assets/balcao_text.png");
-  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE, texture);
+  global_counter_model = LoadModel("assets/balcao.obj");
+  SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/balcao_text.png"));
   GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  global_scale_model = LoadModel("assets/scale.obj");
+  SetMaterialTexture(&global_scale_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/scale_text.png"));
+  GenTextureMipmaps(&global_scale_model.materials[0].maps[MAP_DIFFUSE].texture);
 
   Shader shader = LoadShader("src/lighting.vs", "src/lighting.fs");
   shader.locs[LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
   shader.locs[LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
   int ambientLoc = GetShaderLocation(shader, "ambient");
   SetShaderValue(shader, ambientLoc, (float[4]){ 0.3f, 0.3f, 0.3f, 1.0f }, UNIFORM_VEC4);
+
   global_counter_model.materials[0].shader = shader;
+  global_scale_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
-
 
   Map map = { 0 };
 
   GUI gui = {0};
 
   init_data(&map, &gui);
-
   map.players[0].pos.x = -1;
   map.players[1].pos.x = 1;
   map.player_count = 2;
+
+  global_potion_process_list_len = sizeof(global_potion_process_list)/sizeof(PotionProcess);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -73,14 +139,27 @@ int main(void) {
   camera.type = CAMERA_PERSPECTIVE;                   // Camera mode type
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-
-
   while (!WindowShouldClose()) {
     for (int i = 0; i < map.player_count; i++) {
+      Player *p = &map.players[i];
+
       keyboard_input(&map, i);
 
-      if (map.players[i].item_pickup_cooldown >= 0) {
-        map.players[i].item_pickup_cooldown -= GetFrameTime();
+      if (p->item_pickup_cooldown >= 0) {
+        p->item_pickup_cooldown -= GetFrameTime();
+      }
+
+      switch (p->current_action) {
+        case DT_SCALE:
+          map.scale_list[p->current_action_id].progress -= GetFrameTime();
+          if (map.scale_list[p->current_action_id].progress <= 0) {
+            ItemType item_input[] = { map.scale_list[p->current_action_id].item };
+            map.scale_list[p->current_action_id].item = get_recipe_result(item_input, 1, DT_SCALE);
+            p->current_action = DT_NONE;
+          }
+          break;
+        default:
+          break;
       }
     }
 
@@ -96,16 +175,27 @@ int main(void) {
 
       DrawModel(c.model, c.pos, 1.0f, WHITE);
 
-      if (c.item.type) {
-        Vector3 item_pos = {c.pos.x, c.pos.y+0.6f, c.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, c.item.color);
+      if (c.item) {
+        Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.item]);
+      }
+    }
+
+    // draw scales
+    for (int i = 0; i < map.scale_list_size; i++) {
+      Scale s = map.scale_list[i];
+
+      DrawModel(s.model, s.pos, 1.0f, WHITE);
+      if (s.item) {
+        Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
       }
     }
 
     // draw dropped items
     for (int i = 0; i < map.dropped_item_list_size; i++) {
       DroppedItem item = map.dropped_item_list[i];
-      DrawCube(item.pos, 0.2f, 0.2f, 0.2f, item.item.color);
+      DrawCube(item.pos, 0.2f, 0.2f, 0.2f, global_item_colors[item.item]);
     }
 
     // draw players
@@ -114,9 +204,9 @@ int main(void) {
 
       DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
       DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
-      if (p.item.type) {
+      if (p.item) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, p.item.color);
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);
       }
     }
 

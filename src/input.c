@@ -51,6 +51,9 @@ void up_button(Map *map, int player_id, Vector3 *new_dir) {
   map->players[player_id].pos.z -= 0.1f;
   if (collides_with_counters(*map, player_id) ||
       collides_with_player(*map, player_id)) map->players[player_id].pos.z += 0.1f;
+
+  if (map->players[player_id].item_pickup_cooldown >= 0) return;
+  map->players[player_id].current_action = DT_NONE;
 }
 
 void down_button(Map *map, int player_id, Vector3 *new_dir) {
@@ -58,6 +61,9 @@ void down_button(Map *map, int player_id, Vector3 *new_dir) {
   map->players[player_id].pos.z += 0.1f;
   if (collides_with_counters(*map, player_id) ||
       collides_with_player(*map, player_id)) map->players[player_id].pos.z -= 0.1f;
+
+  if (map->players[player_id].item_pickup_cooldown >= 0) return;
+  map->players[player_id].current_action = DT_NONE;
 }
 
 void left_button(Map *map, int player_id, Vector3 *new_dir) {
@@ -65,6 +71,9 @@ void left_button(Map *map, int player_id, Vector3 *new_dir) {
   map->players[player_id].pos.x -= 0.1f;
   if (collides_with_counters(*map, player_id) ||
       collides_with_player(*map, player_id)) map->players[player_id].pos.x += 0.1f;
+
+  if (map->players[player_id].item_pickup_cooldown >= 0) return;
+  map->players[player_id].current_action = DT_NONE;
 }
 
 void right_button(Map *map, int player_id, Vector3 *new_dir) {
@@ -72,24 +81,106 @@ void right_button(Map *map, int player_id, Vector3 *new_dir) {
   map->players[player_id].pos.x += 0.1f;
   if (collides_with_counters(*map, player_id) ||
       collides_with_player(*map, player_id)) map->players[player_id].pos.x -= 0.1f;
+
+  if (map->players[player_id].item_pickup_cooldown >= 0) return;
+  map->players[player_id].current_action = DT_NONE;
 }
 
 void action_button(Map *map, Player *player) {
   if (player->item_pickup_cooldown >= 0) return;
-
-  float nearest_dist;
-  int nearest = get_aimed_counter(player, map, &nearest_dist);
-  if (!map->counter_list[nearest].item.type && nearest_dist < 0.6f && player->item.type) { // try to put item on the counter
-    map->counter_list[nearest].item = player->item;
-    player->item.type = IT_UNINITIALIZED;
-  }
-  else if (!get_item(player, map) && player->item.type) { // drop item if holding any
-    map->dropped_item_list[map->dropped_item_list_size].item = player->item;
-    map->dropped_item_list[map->dropped_item_list_size].pos = player->pos;
-    map->dropped_item_list_size++;
-    player->item.type = IT_UNINITIALIZED;
-  }
   player->item_pickup_cooldown = PLAYER_ITEM_PICKUP_COOLDOWN;
+
+  float nearest_dist[DT_NONE];
+  int nearest[DT_NONE];
+
+  nearest[DT_COUNTER] = get_aimed_counter(player, map, &nearest_dist[DT_COUNTER]);
+  nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
+
+  int nearest_id = minf(nearest_dist, 2);
+
+  if (nearest_dist[nearest_id] > 0.6f) {
+    if (player->item) {
+      map->dropped_item_list[map->dropped_item_list_size].item = player->item;
+      map->dropped_item_list[map->dropped_item_list_size].pos = player->pos;
+      map->dropped_item_list_size++;
+      player->item = IT_UNINITIALIZED;
+    }
+    else if (!player->item) {
+      int nearest = -1;
+      float nearest_dist = 999999.0f;
+      for (int i = 0; i < map->dropped_item_list_size; i++) {
+        float distance = Vector3Distance(player->pos, map->dropped_item_list[i].pos);
+        if (distance < nearest_dist) {
+          nearest = i;
+          nearest_dist = distance;
+        }
+      }
+
+      // TODO: tune this tolerance better?
+      if (nearest_dist < 0.6f) {
+        // drop item if holding any
+        if (player->item) {
+          map->dropped_item_list[map->dropped_item_list_size].item = player->item;
+          map->dropped_item_list[map->dropped_item_list_size].pos = player->pos;
+          map->dropped_item_list_size++;
+        }
+
+        // get new item
+        player->item = map->dropped_item_list[nearest].item;
+        map->dropped_item_list_size--;
+        for (int i = nearest; i < map->dropped_item_list_size; i++) {
+          map->dropped_item_list[i] = map->dropped_item_list[i+1];
+        }
+      }
+    }
+
+    return;
+  }
+
+  switch (nearest_id) {
+    case DT_COUNTER:
+      if (!map->counter_list[nearest[DT_COUNTER]].item && player->item) { // try to put item on the counter
+        map->counter_list[nearest[DT_COUNTER]].item = player->item;
+        player->item = IT_UNINITIALIZED;
+      }
+      else if (map->counter_list[nearest[DT_COUNTER]].item && player->item) { // drop item if holding any
+          map->dropped_item_list[map->dropped_item_list_size].item = player->item;
+          map->dropped_item_list[map->dropped_item_list_size].pos = player->pos;
+          map->dropped_item_list_size++;
+          player->item = map->counter_list[nearest[DT_COUNTER]].item;
+          map->counter_list[nearest[DT_COUNTER]].item = IT_UNINITIALIZED;
+      }
+      else if (map->counter_list[nearest[DT_COUNTER]].item) {
+        player->item = map->counter_list[nearest[DT_COUNTER]].item;
+        map->counter_list[nearest[DT_COUNTER]].item = IT_UNINITIALIZED;
+      }
+      break;
+    case DT_SCALE:
+      if (!map->scale_list[nearest[DT_SCALE]].item && player->item) {
+        map->scale_list[nearest[DT_SCALE]].item = player->item;
+        map->scale_list[nearest[DT_SCALE]].progress = 5.0f;
+
+        player->item = IT_UNINITIALIZED;
+
+        player->current_action = DT_SCALE;
+        player->current_action_id = nearest[DT_SCALE];
+      }
+      else if (map->scale_list[nearest[DT_SCALE]].item && !player->item) {
+        if (map->scale_list[player->current_action_id].progress > 0) {
+          player->current_action = DT_SCALE;
+          player->current_action_id = nearest[DT_SCALE];
+        }
+        else {
+          player->item = map->scale_list[player->current_action_id].item;
+          map->scale_list[player->current_action_id].item = IT_UNINITIALIZED;
+
+          player->current_action = DT_NONE;
+        }
+      }
+      break;
+    default:
+      assert(false);
+  }
 }
 
 void keyboard_input(Map *map, int player_id) {
