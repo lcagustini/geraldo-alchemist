@@ -31,6 +31,16 @@ void add_available_recipes(ItemType a) {
 }
 
 void remove_available_recipes(ItemType a) {
+  for (int i = 0; i < global_available_recipes_count; i++) {
+    if (a == global_available_recipes[i]) {
+      global_available_recipes_count--;
+      for (int j = i; j < global_available_recipes_count; j++) {
+        global_available_recipes[j] = global_available_recipes[j+1];
+      }
+      printf("Removed recipe %d from position %d\n", a, i);
+      return;
+    }
+  }
 }
 
 // Chooses a random recipe based on difficulty and adds to the list of wanted products
@@ -60,6 +70,16 @@ void generate_recipe(GUI *gui) {
 }
 
 // Receives an item and checks if it is expected. If so, remove it from the list of wanted recipes.
-void consume_recipe() {
-
+// returns true if item was expected and false if not
+bool consume_recipe(ItemType item) {
+  for (int i = global_wanted_items_start; ; i = (i+1)%MAX_WANTED_ITEMS) {
+    if (i == global_wanted_items_end) break;
+    
+    if (item == global_wanted_items[i]) {
+      global_wanted_items[i] = global_wanted_items[global_wanted_items_start];
+      global_wanted_items_start++;
+      return true;
+    }
+  }
+  return false;
 }
