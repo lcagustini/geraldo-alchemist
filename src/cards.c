@@ -30,6 +30,7 @@ void add_available_recipes(ItemType a) {
   global_available_recipes_count++;
 }
 
+// NOTE: unused for now, could be used for a better experience
 void remove_available_recipes(ItemType a) {
   for (int i = 0; i < global_available_recipes_count; i++) {
     if (a == global_available_recipes[i]) {

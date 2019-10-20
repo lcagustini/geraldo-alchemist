@@ -252,6 +252,10 @@ void action_button(Map *map, Player *player) {
     case DT_DELIVERY:
       puts("delivery");
       if (player->item) {
+        if (consume_recipe(player->item)) { // if wanted item
+          //TODO: add_available_recipes();
+          global_delivered_items++;
+        }
         if (player->item < IT_BOTTLED_ITEMS) player->item = IT_EMPTY_BOTTLE;
         else player->item = IT_UNINITIALIZED;
       }

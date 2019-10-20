@@ -26,6 +26,8 @@
 
 #define MAX_WANTED_ITEMS 8
 
+#define RECIPE_GENERATION_TIMER 5.0f;
+
 #define CAULDRON_SPEED 20.0f
 #define CENTRIFUGE_SPEED 20.0f
 #define SCALE_SPEED 5.0f
@@ -111,6 +113,9 @@ int global_wanted_items_end;
 
 Model global_item_models[IT_MAX];
 
+int global_delivered_items = 0;
+
+
 #include "util.c"
 #include "cards.c"
 #include "data.c"
@@ -134,6 +139,8 @@ for_continue: ;
 }
 
 int main(void) {
+  float recipe_generation_timer = RECIPE_GENERATION_TIMER;
+
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
@@ -313,10 +320,6 @@ int main(void) {
   global_available_recipes_count = 0;
   add_available_recipes(IT_INGREDIENT1_POWDER);
   add_available_recipes(IT_INGREDIENT2_POWDER);
-  generate_recipe(&gui);
-  generate_recipe(&gui);
-  generate_recipe(&gui);
-  generate_recipe(&gui);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -327,6 +330,13 @@ int main(void) {
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
   while (!WindowShouldClose()) {
+    if (recipe_generation_timer < 0) {
+      recipe_generation_timer = RECIPE_GENERATION_TIMER;
+      generate_recipe(&gui);
+    } else {
+      recipe_generation_timer -= GetFrameTime();
+    }
+
     BeginDrawing();
 
     ClearBackground(GRAY);
