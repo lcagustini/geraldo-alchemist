@@ -16,12 +16,14 @@ void add_centrifuge(Map *map, float x, float z, Vector3 dir) {
   map->centrifuge_list[map->centrifuge_list_size].progress = 5;
   map->centrifuge_list[map->centrifuge_list_size].pos = (Vector3){ x, 0.0f, z };
   map->centrifuge_list[map->centrifuge_list_size].dir = dir;
-  map->centrifuge_list[map->centrifuge_list_size].model = global_centrifuge_open_model;
+  map->centrifuge_list[map->centrifuge_list_size].model_open = global_centrifuge_open_model;
+  map->centrifuge_list[map->centrifuge_list_size].model_closed = global_centrifuge_closed_model;
   float angle = atan2f(-dir.z, dir.x);
   Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
   Vector3 pos = map->centrifuge_list[map->centrifuge_list_size].pos;
   Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
-  map->centrifuge_list[map->centrifuge_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->centrifuge_list[map->centrifuge_list_size].model_open.transform = MatrixMultiply(rot, tran);
+  map->centrifuge_list[map->centrifuge_list_size].model_closed.transform = MatrixMultiply(rot, tran);
   map->centrifuge_list_size++;
 }
 
@@ -76,7 +78,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -1.0, -3.0, dir);
   add_counter(map, 0.0, -3.0, dir);
   add_counter(map, 1.0, -3.0, dir);
-  add_counter(map, 2.0, -3.0, dir);
+  add_centrifuge(map, 2.0, -3.0, dir);
   add_counter(map, 3.0, -3.0, dir);
   add_counter(map, 4.0, -3.0, dir);
   add_counter(map, 5.0, -3.0, dir);
@@ -91,7 +93,7 @@ void init_data(Map *map, GUI *gui) {
   dir = (Vector3){ 0.0f, 0.0f, -1.0f };
   add_counter(map, -5.0, 3.0, dir);
   add_counter(map, -4.0, 3.0, dir);
-  add_centrifuge(map, -3.0, 3.0, dir);
+  add_counter(map, -3.0, 3.0, dir);
   add_counter(map, -2.0, 3.0, dir);
   add_counter(map, -1.0, 3.0, dir);
   add_scale(map, 0.0, 3.0, dir);
@@ -101,7 +103,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, 4.0, 3.0, dir);
   add_counter(map, 5.0, 3.0, dir);
 
-  add_item_to_counter(&map->counter_list[4], IT_INGREDIENT1);
+  add_item_to_counter(&map->counter_list[3], IT_INGREDIENT1);
   add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
   add_item_to_counter(&map->counter_list[8], IT_INGREDIENT3);
 

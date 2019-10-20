@@ -96,9 +96,9 @@ void action_button(Map *map, Player *player) {
   nearest[DT_COUNTER] = get_aimed_counter(player, map, &nearest_dist[DT_COUNTER]);
   nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
   nearest[DT_CAULDRON] = get_aimed_cauldron(player, map, &nearest_dist[DT_CAULDRON]);
+  nearest[DT_CENTRIFUGE] = get_aimed_centrifuge(player, map, &nearest_dist[DT_CENTRIFUGE]);
 
-  //printf("nearest_counter %d, dist %f\n", nearest[DT_COUNTER], nearest_dist[DT_COUNTER]);
-  int nearest_id = minf(nearest_dist, 3);
+  int nearest_id = minf(nearest_dist, 4);
 
   if (nearest_dist[nearest_id] > MIN_RANGE_TO_USE_DEVICE) {
     if (player->item) {
@@ -162,7 +162,7 @@ void action_button(Map *map, Player *player) {
       puts("scale");
       if (!map->scale_list[nearest[DT_SCALE]].item && player->item) {
         map->scale_list[nearest[DT_SCALE]].item = player->item;
-        map->scale_list[nearest[DT_SCALE]].progress = 5.0f;
+        map->scale_list[nearest[DT_SCALE]].progress = SCALE_SPEED;
 
         player->item = IT_UNINITIALIZED;
 
@@ -184,27 +184,36 @@ void action_button(Map *map, Player *player) {
       break;
     case DT_CAULDRON:
       puts("cauldron");
-      if (!(map->cauldron_list[nearest[DT_CAULDRON]].items_size < MAX_INGREDIENTS) &&
+      if (map->cauldron_list[nearest[DT_CAULDRON]].items_size < MAX_INGREDIENTS &&
           player->item) {
         map->cauldron_list[nearest[DT_CAULDRON]].items[map->cauldron_list[nearest[DT_CAULDRON]].items_size++] = player->item;
-        map->cauldron_list[nearest[DT_CAULDRON]].progress = 5.0f;
+        map->cauldron_list[nearest[DT_CAULDRON]].progress = CAULDRON_SPEED;
 
         player->item = IT_UNINITIALIZED;
 
-        player->current_action = DT_CAULDRON;
-        player->current_action_id = nearest[DT_CAULDRON];
+        player->current_action = DT_NONE;
       }
       else if (map->cauldron_list[nearest[DT_CAULDRON]].items_size && !player->item) {
-        if (map->cauldron_list[player->current_action_id].progress > 0) {
-          player->current_action = DT_CAULDRON;
-          player->current_action_id = nearest[DT_CAULDRON];
-        }
-        else {
-          player->item = map->cauldron_list[player->current_action_id].items[0];
-          map->cauldron_list[player->current_action_id].items_size = 0;
+        player->item = map->cauldron_list[nearest[DT_CAULDRON]].items[--map->cauldron_list[nearest[DT_CAULDRON]].items_size];
 
-          player->current_action = DT_NONE;
-        }
+        player->current_action = DT_NONE;
+      }
+      break;
+    case DT_CENTRIFUGE:
+      puts("centrifuge");
+      if (!map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && player->item) {
+        map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = player->item;
+        map->centrifuge_list[nearest[DT_CENTRIFUGE]].progress = CENTRIFUGE_SPEED;
+
+        player->item = IT_UNINITIALIZED;
+
+        player->current_action = DT_NONE;
+      }
+      else if (map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && !player->item) {
+        player->item = map->centrifuge_list[nearest[DT_CENTRIFUGE]].item;
+        map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = IT_UNINITIALIZED;
+
+        player->current_action = DT_NONE;
       }
       break;
     default:

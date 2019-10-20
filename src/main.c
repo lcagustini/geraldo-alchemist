@@ -20,6 +20,10 @@
 #define PLAYER_ITEM_PICKUP_COOLDOWN 0.2f
 #define PLAYER_SPEED 5.0f
 
+#define CAULDRON_SPEED 20.0f
+#define CENTRIFUGE_SPEED 20.0f
+#define SCALE_SPEED 5.0f
+
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
                                                     (a).pos.z - 0.5f},\
@@ -68,6 +72,12 @@ PotionProcess global_potion_process_list[] = {
     .before_len = 2,
     .process = DT_CAULDRON,
     .after = IT_INGREDIENT_COOKED_3_4,
+  },
+  {
+    .before = {IT_INGREDIENT3_SMALL},
+    .before_len = 1,
+    .process = DT_CENTRIFUGE,
+    .after = IT_INGREDIENT_SOLID_3,
   }
 };
 int global_potion_process_list_len;
@@ -86,6 +96,7 @@ Color global_item_colors[] = {
   MAROON,
 
   PINK,
+  VIOLET,
 
   BLACK
 };
@@ -103,10 +114,11 @@ ItemType get_recipe_result(ItemType input[], int input_len, DeviceType process) 
       sort(global_potion_process_list[j].before, input_len);
       sort(input, input_len);
       for (int i = 0; i < input_len; i++) {
-        if (global_potion_process_list[j].before[i] != input[i]) return IT_GARBAGE;
+        if (global_potion_process_list[j].before[i] != input[i]) goto for_continue;
       }
       return global_potion_process_list[j].after;
     }
+for_continue: ;
   }
   return IT_GARBAGE;
 }
@@ -201,19 +213,9 @@ int main(void) {
         case DT_SCALE:
           map.scale_list[p->current_action_id].progress -= GetFrameTime();
           if (map.scale_list[p->current_action_id].progress <= 0) {
+            printf("%d\n", map.scale_list[p->current_action_id].item);
             ItemType item_input[] = { map.scale_list[p->current_action_id].item };
             map.scale_list[p->current_action_id].item = get_recipe_result(item_input, 1, DT_SCALE);
-            p->current_action = DT_NONE;
-          }
-          break;
-        case DT_CAULDRON:
-          map.cauldron_list[p->current_action_id].progress -= GetFrameTime();
-          if (map.cauldron_list[p->current_action_id].progress <= 0) {
-            map.cauldron_list[p->current_action_id].items[0] =
-              get_recipe_result(map.cauldron_list[p->current_action_id].items,
-                                map.cauldron_list[p->current_action_id].items_size,
-                                DT_CAULDRON);
-            map.cauldron_list[p->current_action_id].items_size = 0;
             p->current_action = DT_NONE;
           }
           break;
@@ -222,19 +224,28 @@ int main(void) {
       }
 
       for (int i = 0; i < map.centrifuge_list_size; i++) {
+        if (map.centrifuge_list[i].progress > 0) {
+          map.centrifuge_list[i].progress -= GetFrameTime();
+        }
+        else if (map.centrifuge_list[i].item && map.centrifuge_list[i].progress != -1.0f) {
+          ItemType input[] = { map.centrifuge_list[i].item };
+          map.centrifuge_list[i].item =
+            get_recipe_result(input, 1, DT_CENTRIFUGE);
+          map.centrifuge_list[i].progress = -1.0f;
+        }
       }
 
       for (int i = 0; i < map.cauldron_list_size; i++) {
         if (map.cauldron_list[i].progress > 0) {
           map.cauldron_list[i].progress -= GetFrameTime();
         }
-        else {
+        else if (map.cauldron_list[i].items_size) {
           map.cauldron_list[i].items[0] =
             get_recipe_result(map.cauldron_list[i].items,
                 map.cauldron_list[i].items_size,
                 DT_CAULDRON);
           map.cauldron_list[i].items_size = 1;
-          map.cauldron_list[i].progress = 5.0f;
+          map.cauldron_list[i].progress = CAULDRON_SPEED;
         }
       }
     }
@@ -266,7 +277,7 @@ int main(void) {
     for (int i = 0; i < map.centrifuge_list_size; i++) {
       Centrifuge s = map.centrifuge_list[i];
 
-      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
+      DrawModel(s.item ? s.model_closed : s.model_open, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
@@ -278,6 +289,11 @@ int main(void) {
       Cauldron c = map.cauldron_list[i];
 
       DrawModel(c.model, Vector3Zero(), 1.0f, WHITE);
+
+      for (int j = 0; j < c.items_size; j++) {
+        Vector3 item_pos = {c.pos.x, c.pos.y+1.3f+(j*0.3), c.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.items[j]]);
+      }
     }
 
     // draw dropped items

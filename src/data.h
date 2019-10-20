@@ -18,6 +18,7 @@ typedef enum {
   IT_INGREDIENT4_SMALL,
 
   IT_INGREDIENT_COOKED_3_4,
+  IT_INGREDIENT_SOLID_3,
 
   IT_GARBAGE,
 
@@ -29,9 +30,9 @@ typedef enum {
 
   DT_SCALE,
   DT_CAULDRON,
+  DT_CENTRIFUGE,
   DT_MASHER,
   DT_BOTTLE,
-  DT_CENTRIFUGE,
 
   DT_NONE
 } DeviceType;
@@ -62,7 +63,9 @@ typedef struct {
   Vector3 dir;
   ItemType item;
   float progress;
-  Model model;
+
+  Model model_open;
+  Model model_closed;
 } Centrifuge;
 
 typedef struct {
