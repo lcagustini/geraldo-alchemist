@@ -56,6 +56,19 @@ void add_chest(Map *map, float x, float z, Vector3 dir, ItemType item) {
   map->chest_list_size++;
 }
 
+void add_delivery(Map *map, float x, float z, Vector3 dir) {
+  dir = Vector3Subtract(Vector3Zero(), dir);
+  map->delivery_list[map->delivery_list_size].pos = (Vector3){ x, 0.0f, z };
+  map->delivery_list[map->delivery_list_size].dir = dir;
+  map->delivery_list[map->delivery_list_size].model = global_delivery_model;
+  float angle = atan2f(-dir.z, dir.x);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->delivery_list[map->delivery_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  map->delivery_list[map->delivery_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->delivery_list_size++;
+}
+
 void add_scale(Map *map, float x, float z, Vector3 dir) {
   map->scale_list[map->scale_list_size].item = IT_UNINITIALIZED;
   map->scale_list[map->scale_list_size].progress = 5;
@@ -127,7 +140,7 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -3.0, 3.0, dir);
   add_chest(map, -2.0, 3.0, dir, IT_INGREDIENT3);
   add_counter(map, -1.0, 3.0, dir);
-  add_counter(map, 0.0, 3.0, dir);
+  add_delivery(map, 0.0, 3.0, dir);
   add_counter(map, 1.0, 3.0, dir);
   add_cauldron(map, 2.0, 3.0, dir);
   add_counter(map, 3.0, 3.0, dir);
