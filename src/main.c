@@ -25,6 +25,7 @@
 #define CAULDRON_SPEED 20.0f
 #define CENTRIFUGE_SPEED 20.0f
 #define SCALE_SPEED 5.0f
+#define MASHER_SPEED 5.0f
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
@@ -44,6 +45,7 @@ Model global_scale_full_model;
 Model global_cauldron_model;
 Model global_centrifuge_open_model;
 Model global_centrifuge_closed_model;
+Model global_masher_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -165,6 +167,11 @@ int main(void) {
     LoadTexture("assets/centrifuge_text.png"));
   GenTextureMipmaps(&global_centrifuge_closed_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  global_masher_model = LoadModel("assets/masher_empty.obj");
+  SetMaterialTexture(&global_masher_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/masher_empty_text.png"));
+  GenTextureMipmaps(&global_masher_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   global_character_model = LoadModel("assets/personagem.obj");
   //Texture2D texture = LoadTexture("assets/balcao_text.png");
   //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
@@ -183,6 +190,7 @@ int main(void) {
   global_character_model.materials[0].shader = shader;
   global_centrifuge_open_model.materials[0].shader = shader;
   global_centrifuge_closed_model.materials[0].shader = shader;
+  global_masher_model.materials[0].shader = shader;
   floor_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
@@ -228,9 +236,16 @@ int main(void) {
         case DT_SCALE:
           map.scale_list[p->current_action_id].progress -= GetFrameTime();
           if (map.scale_list[p->current_action_id].progress <= 0) {
-            printf("%d\n", map.scale_list[p->current_action_id].item);
             ItemType item_input[] = { map.scale_list[p->current_action_id].item };
             map.scale_list[p->current_action_id].item = get_recipe_result(item_input, 1, DT_SCALE);
+            p->current_action = DT_NONE;
+          }
+          break;
+        case DT_MASHER:
+          map.masher_list[p->current_action_id].progress -= GetFrameTime();
+          if (map.masher_list[p->current_action_id].progress <= 0) {
+            ItemType item_input[] = { map.masher_list[p->current_action_id].item };
+            map.masher_list[p->current_action_id].item = get_recipe_result(item_input, 1, DT_MASHER);
             p->current_action = DT_NONE;
           }
           break;
@@ -289,6 +304,17 @@ int main(void) {
       Scale s = map.scale_list[i];
 
       DrawModel(s.item ? s.model_full : s.model_empty, Vector3Zero(), 1.0f, WHITE);
+      if (s.item) {
+        Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+      }
+    }
+
+    // draw mashers
+    for (int i = 0; i < map.masher_list_size; i++) {
+      Masher s = map.masher_list[i];
+
+      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
