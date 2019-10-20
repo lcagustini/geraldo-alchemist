@@ -97,9 +97,10 @@ void action_button(Map *map, Player *player) {
   nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
   nearest[DT_CAULDRON] = get_aimed_cauldron(player, map, &nearest_dist[DT_CAULDRON]);
 
+  //printf("nearest_counter %d, dist %f\n", nearest[DT_COUNTER], nearest_dist[DT_COUNTER]);
   int nearest_id = minf(nearest_dist, 3);
 
-  if (nearest_dist[nearest_id] > 0.6f) {
+  if (nearest_dist[nearest_id] > MIN_RANGE_TO_USE_DEVICE) {
     if (player->item) {
       map->dropped_item_list[map->dropped_item_list_size].item = player->item;
       map->dropped_item_list[map->dropped_item_list_size].pos = player->pos;
@@ -118,7 +119,7 @@ void action_button(Map *map, Player *player) {
       }
 
       // TODO: tune this tolerance better?
-      if (nearest_dist < 0.6f) {
+      if (nearest_dist < MIN_RANGE_TO_PICKUP_ITEM) {
         // drop item if holding any
         if (player->item) {
           map->dropped_item_list[map->dropped_item_list_size].item = player->item;

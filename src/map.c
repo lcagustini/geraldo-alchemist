@@ -5,7 +5,7 @@ bool collides_with_map(Map map, int player_id) {
     bbox.min = Vector3Add(bbox.min, map.counter_list[i].pos);
     bbox.max = Vector3Add(bbox.max, map.counter_list[i].pos);
 
-    DrawBoundingBox(bbox, BLUE);
+    //DrawBoundingBox(bbox, BLUE);
     if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
       return true;
     }
@@ -17,7 +17,7 @@ bool collides_with_map(Map map, int player_id) {
     bbox.min = Vector3Add(bbox.min, map.scale_list[i].pos);
     bbox.max = Vector3Add(bbox.max, map.scale_list[i].pos);
 
-    DrawBoundingBox(bbox, BLUE);
+    //DrawBoundingBox(bbox, BLUE);
     if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
       return true;
     }
@@ -29,7 +29,7 @@ bool collides_with_map(Map map, int player_id) {
     bbox.min = Vector3Add(bbox.min, map.cauldron_list[i].pos);
     bbox.max = Vector3Add(bbox.max, map.cauldron_list[i].pos);
 
-    DrawBoundingBox(bbox, BLUE);
+    //DrawBoundingBox(bbox, BLUE);
     if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
       return true;
     }
@@ -41,7 +41,7 @@ bool collides_with_map(Map map, int player_id) {
     bbox.min = Vector3Add(bbox.min, map.centrifuge_list[i].pos);
     bbox.max = Vector3Add(bbox.max, map.centrifuge_list[i].pos);
 
-    DrawBoundingBox(bbox, BLUE);
+    //DrawBoundingBox(bbox, BLUE);
     if (CheckCollisionBoxes(GET_COUNTER_BBOX(map.players[player_id]), bbox)) {
       return true;
     }
