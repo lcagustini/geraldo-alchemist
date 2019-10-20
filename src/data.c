@@ -42,6 +42,20 @@ void add_masher(Map *map, float x, float z, Vector3 dir) {
   map->masher_list_size++;
 }
 
+void add_chest(Map *map, float x, float z, Vector3 dir, ItemType item) {
+  dir = Vector3Subtract(Vector3Zero(), dir);
+  map->chest_list[map->chest_list_size].item = item;
+  map->chest_list[map->chest_list_size].pos = (Vector3){ x, 0.0f, z };
+  map->chest_list[map->chest_list_size].dir = dir;
+  map->chest_list[map->chest_list_size].model = global_chest_model;
+  float angle = atan2f(-dir.z, dir.x);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->chest_list[map->chest_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  map->chest_list[map->chest_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->chest_list_size++;
+}
+
 void add_scale(Map *map, float x, float z, Vector3 dir) {
   map->scale_list[map->scale_list_size].item = IT_UNINITIALIZED;
   map->scale_list[map->scale_list_size].progress = 5;
@@ -111,18 +125,18 @@ void init_data(Map *map, GUI *gui) {
   add_counter(map, -5.0, 3.0, dir);
   add_counter(map, -4.0, 3.0, dir);
   add_counter(map, -3.0, 3.0, dir);
-  add_counter(map, -2.0, 3.0, dir);
+  add_chest(map, -2.0, 3.0, dir, IT_INGREDIENT3);
   add_counter(map, -1.0, 3.0, dir);
   add_counter(map, 0.0, 3.0, dir);
-  add_cauldron(map, 1.0, 3.0, dir);
+  add_counter(map, 1.0, 3.0, dir);
   add_cauldron(map, 2.0, 3.0, dir);
-  add_cauldron(map, 3.0, 3.0, dir);
+  add_counter(map, 3.0, 3.0, dir);
   add_counter(map, 4.0, 3.0, dir);
   add_counter(map, 5.0, 3.0, dir);
 
-  add_item_to_counter(&map->counter_list[3], IT_INGREDIENT1);
-  add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
-  add_item_to_counter(&map->counter_list[8], IT_INGREDIENT3);
+  //add_item_to_counter(&map->counter_list[3], IT_INGREDIENT1);
+  //add_item_to_counter(&map->counter_list[7], IT_INGREDIENT4);
+  //add_item_to_counter(&map->counter_list[8], IT_INGREDIENT3);
 
   ItemType list[5] = {1, 1, 1, 1, 1};
   add_card(gui, list, 2);

@@ -36,6 +36,8 @@ typedef enum {
   DT_CAULDRON,
 
   DT_CENTRIFUGE,
+
+  DT_CHEST,
   DT_BOTTLE,
 
   DT_NONE
@@ -104,6 +106,13 @@ typedef struct {
   Vector3 pos;
   Vector3 dir;
   ItemType item;
+  Model model;
+} Chest;
+
+typedef struct {
+  Vector3 pos;
+  Vector3 dir;
+  ItemType item;
   float item_pickup_cooldown; // less than 0 = good to go
 
   DeviceType current_action;
@@ -113,6 +122,9 @@ typedef struct {
 } Player;
 
 typedef struct {
+  Chest chest_list[MAX_DEVICES];
+  int chest_list_size;
+
   Masher masher_list[MAX_DEVICES];
   int masher_list_size;
 
