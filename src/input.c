@@ -204,7 +204,7 @@ void action_button(Map *map, Player *player) {
       break;
     case DT_CENTRIFUGE:
       puts("centrifuge");
-      if (!map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && player->item < IT_BOTTLED_ITEMS && player->item != IT_EMPTY_BOTTLE) {
+      if (!map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && player->item < IT_BOTTLED_ITEMS && player->item != IT_EMPTY_BOTTLE && player->item) {
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = player->item;
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].progress = CENTRIFUGE_SPEED;
 
