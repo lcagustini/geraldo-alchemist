@@ -129,7 +129,7 @@ int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
-  Mesh plane_mesh = GenMeshPlane(FLOOR_SIZE, FLOOR_SIZE, 10, 10);
+  Mesh plane_mesh = GenMeshPlane(FLOOR_SIZE, FLOOR_SIZE, 1, 1);
   Model floor_model = LoadModelFromMesh(plane_mesh);
   floor_model.materials[0].maps[MAP_DIFFUSE].texture = LoadTexture("assets/wood.png");
   GenTextureMipmaps(&floor_model.materials[0].maps[MAP_DIFFUSE].texture);
@@ -258,8 +258,8 @@ int main(void) {
     }
 
     // draw floor
-    for (int i = -20; i < 20; i++) {
-      for (int j = -20; j < 20; j++) {
+    for (int i = -10; i < 10; i++) {
+      for (int j = -10; j < 10; j++) {
         DrawModel(floor_model, (Vector3) { i * FLOOR_SIZE, 0, j * FLOOR_SIZE }, 1.0f, WHITE);
       }
     }
@@ -325,6 +325,7 @@ int main(void) {
       DrawModel(p.model, p.pos, 0.5f, WHITE);
       if (p.item) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
+        item_pos = Vector3Add(item_pos, Vector3Scale(p.dir, 0.6f));
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);
       }
     }
