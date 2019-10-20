@@ -77,6 +77,7 @@ Model global_blue_powder_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
+Model global_garbage_model;
 
 Model global_flower_model;
 Model global_mushroom_model;
@@ -270,6 +271,12 @@ int main(void) {
   //GenTextureMipmaps(&global_bone_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_bone_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
+  global_garbage_model = LoadModel("assets/stone.obj");
+  SetMaterialTexture(&global_garbage_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/garbage_text.png"));
+  GenTextureMipmaps(&global_garbage_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_garbage_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
   global_crystal_model = LoadModel("assets/crystal.obj");
   SetMaterialTexture(&global_crystal_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/crystal_text.png"));
@@ -429,6 +436,7 @@ int main(void) {
   global_yellow_stone_model.materials[0].shader = shader;
   global_green_stone_model.materials[0].shader = shader;
   global_purple_stone_model.materials[0].shader = shader;
+  global_garbage_model.materials[0].shader = shader;
   global_crystal_model.materials[0].shader = shader;
   global_red_crystal_model.materials[0].shader = shader;
   global_blue_crystal_model.materials[0].shader = shader;
@@ -470,7 +478,7 @@ int main(void) {
     global_item_models[IT_YELLOW_CRYSTAL] = global_crystal_model;
     global_item_models[IT_LITTLE_MAN] = global_crystal_model;
 
-    global_item_models[IT_GARBAGE] = global_crystal_model;
+    global_item_models[IT_GARBAGE] = global_garbage_model;
   }
 
   {
