@@ -441,14 +441,14 @@ int main(void) {
     global_item_models[IT_BLUE_CRYSTAL] = global_blue_crystal_model;
     global_item_models[IT_BONE] = global_bone_model;
 
-    global_item_models[IT_SMALL_FLOWER] = global_crystal_model;
+    global_item_models[IT_SMALL_FLOWER] = global_flower_model;
     global_item_models[IT_RED_POWDER] = global_red_powder_model;
-    global_item_models[IT_SMALL_MUSHROOM] = global_crystal_model;
+    global_item_models[IT_SMALL_MUSHROOM] = global_mushroom_model;
     global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
     global_item_models[IT_WHITE_POWDER] = global_white_powder_model;
     global_item_models[IT_GREEN_POWDER] = global_crystal_model;
     global_item_models[IT_SMALL_RED_ROCK] = global_red_stone_model;
-    global_item_models[IT_SMALL_BONE] = global_crystal_model;
+    global_item_models[IT_SMALL_BONE] = global_bone_model;
 
     global_item_models[IT_RED_CRYSTAL] = global_red_crystal_model;
     global_item_models[IT_YELLOW_CRYSTAL] = global_crystal_model;
@@ -462,6 +462,8 @@ int main(void) {
     global_item_icons_scale[IT_FLOWER] = 0.05f;
     global_item_icons[IT_BONE] = LoadTexture("assets/osso.png");
     global_item_icons_scale[IT_BONE] = 0.05f;
+    global_item_icons[IT_SMALL_BONE] = LoadTexture("assets/osso.png");
+    global_item_icons_scale[IT_SMALL_BONE] = 0.05f;
     global_item_icons[IT_WHITE_POWDER] = LoadTexture("assets/pozinho_branco.png");
     global_item_icons_scale[IT_WHITE_POWDER] = 0.05f;
     global_item_icons[IT_RED_ROCK] = LoadTexture("assets/red_rock.png");
@@ -504,7 +506,7 @@ int main(void) {
   add_available_recipes(IT_RED_POWDER);
   add_available_recipes(IT_GREEN_POWDER);
   add_available_recipes(IT_BLUE_POWDER);
-  add_available_recipes(IT_SMALL_FLOWER);
+  //add_available_recipes(IT_SMALL_FLOWER);
   add_available_recipes(IT_BLUE_POTION);
 
   Camera3D camera = { 0 };
