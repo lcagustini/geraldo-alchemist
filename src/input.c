@@ -97,8 +97,9 @@ void action_button(Map *map, Player *player) {
   nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
   nearest[DT_CAULDRON] = get_aimed_cauldron(player, map, &nearest_dist[DT_CAULDRON]);
   nearest[DT_CENTRIFUGE] = get_aimed_centrifuge(player, map, &nearest_dist[DT_CENTRIFUGE]);
+  nearest[DT_MASHER] = get_aimed_masher(player, map, &nearest_dist[DT_MASHER]);
 
-  int nearest_id = minf(nearest_dist, 4);
+  int nearest_id = minf(nearest_dist, 5);
 
   if (nearest_dist[nearest_id] > MIN_RANGE_TO_USE_DEVICE) {
     if (player->item) {
@@ -118,7 +119,6 @@ void action_button(Map *map, Player *player) {
         }
       }
 
-      // TODO: tune this tolerance better?
       if (nearest_dist < MIN_RANGE_TO_PICKUP_ITEM) {
         // drop item if holding any
         if (player->item) {
@@ -214,6 +214,30 @@ void action_button(Map *map, Player *player) {
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = IT_UNINITIALIZED;
 
         player->current_action = DT_NONE;
+      }
+      break;
+    case DT_MASHER:
+      puts("masher");
+      if (!map->masher_list[nearest[DT_MASHER]].item && player->item) {
+        map->masher_list[nearest[DT_MASHER]].item = player->item;
+        map->masher_list[nearest[DT_MASHER]].progress = MASHER_SPEED;
+
+        player->item = IT_UNINITIALIZED;
+
+        player->current_action = DT_MASHER;
+        player->current_action_id = nearest[DT_MASHER];
+      }
+      else if (map->masher_list[nearest[DT_MASHER]].item && !player->item) {
+        if (map->masher_list[player->current_action_id].progress > 0) {
+          player->current_action = DT_MASHER;
+          player->current_action_id = nearest[DT_MASHER];
+        }
+        else {
+          player->item = map->masher_list[player->current_action_id].item;
+          map->masher_list[player->current_action_id].item = IT_UNINITIALIZED;
+
+          player->current_action = DT_NONE;
+        }
       }
       break;
     default:

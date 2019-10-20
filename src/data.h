@@ -20,7 +20,7 @@ typedef enum {
   IT_INGREDIENT_COOKED_3_4,
   IT_INGREDIENT_SOLID_3,
 
-  IT_RED_POTION,
+  //IT_RED_POTION,
 
   IT_GARBAGE,
 
@@ -31,9 +31,11 @@ typedef enum {
   DT_COUNTER,
 
   DT_SCALE,
-  DT_CAULDRON,
-  DT_CENTRIFUGE,
   DT_MASHER,
+
+  DT_CAULDRON,
+
+  DT_CENTRIFUGE,
   DT_BOTTLE,
 
   DT_NONE
@@ -83,6 +85,15 @@ typedef struct {
 typedef struct {
   Vector3 pos;
   Vector3 dir;
+  ItemType item;
+  float progress;
+
+  Model model;
+} Masher;
+
+typedef struct {
+  Vector3 pos;
+  Vector3 dir;
   ItemType items[MAX_INGREDIENTS];
   int items_size;
   float progress;
@@ -102,6 +113,9 @@ typedef struct {
 } Player;
 
 typedef struct {
+  Masher masher_list[MAX_DEVICES];
+  int masher_list_size;
+
   Centrifuge centrifuge_list[MAX_DEVICES];
   int centrifuge_list_size;
 
