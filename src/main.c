@@ -259,19 +259,19 @@ int main(void) {
 
   global_green_powder_model = LoadModel("assets/pozinho.obj");
   SetMaterialTexture(&global_green_powder_model.materials[0], MAP_DIFFUSE,
-      LoadTexture("assets/po_verde_text.png"));
+      LoadTexture("assets/pozinho_verde_text.png"));
   GenTextureMipmaps(&global_green_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_green_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
   global_red_powder_model = LoadModel("assets/pozinho.obj");
   SetMaterialTexture(&global_red_powder_model.materials[0], MAP_DIFFUSE,
-      LoadTexture("assets/po_vermelho_text.png"));
+      LoadTexture("assets/pozinho_vermelho_text.png"));
   GenTextureMipmaps(&global_red_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_red_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
   global_blue_powder_model = LoadModel("assets/pozinho.obj");
   SetMaterialTexture(&global_blue_powder_model.materials[0], MAP_DIFFUSE,
-      LoadTexture("assets/po_azul_text.png"));
+      LoadTexture("assets/pozinho_azul_text.png"));
   GenTextureMipmaps(&global_blue_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_blue_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
@@ -502,7 +502,7 @@ int main(void) {
     global_item_models[IT_SMALL_MUSHROOM] = global_small_mushroom_model;
     global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
     global_item_models[IT_WHITE_POWDER] = global_white_powder_model;
-    global_item_models[IT_GREEN_POWDER] = global_crystal_model;
+    global_item_models[IT_GREEN_POWDER] = global_green_powder_model;
     global_item_models[IT_SMALL_RED_ROCK] = global_small_red_stone_model;
     global_item_models[IT_SMALL_BONE] = global_small_bone_model;
 
