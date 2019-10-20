@@ -130,7 +130,7 @@ ItemType get_recipe_result(ItemType input[], int input_len, DeviceType process) 
     }
 for_continue: ;
   }
-  return IT_GARBAGE;
+  return process == DT_CAULDRON ? IT_GARBAGE_BOTTLE : IT_GARBAGE;
 }
 
 int main(void) {
@@ -273,22 +273,25 @@ int main(void) {
   global_crystal_model.materials[0].shader = shader;
 
   {
-    global_item_models[0] = global_red_potion_model;
+    global_item_models[IT_UNINITIALIZED] = global_red_potion_model;
 
-    global_item_models[1] = global_purple_stone_model;
-    global_item_models[2] = global_yellow_stone_model;
-    global_item_models[3] = global_red_stone_model;
-    global_item_models[4] = global_crystal_model;
+    global_item_models[IT_EMPTY_BOTTLE] = global_crystal_model;
+    global_item_models[IT_GARBAGE_BOTTLE] = global_green_stone_model;
+    global_item_models[IT_INGREDIENT_COOKED_3_4] = global_blue_potion_model;
 
-    global_item_models[5] = global_green_stone_model;
-    global_item_models[6] = global_yellow_potion_model;
-    global_item_models[7] = global_red_potion_model;
-    global_item_models[8] = global_red_potion_model;
+    global_item_models[IT_INGREDIENT1] = global_purple_stone_model;
+    global_item_models[IT_INGREDIENT2] = global_yellow_stone_model;
+    global_item_models[IT_INGREDIENT3] = global_red_stone_model;
+    global_item_models[IT_INGREDIENT4] = global_crystal_model;
 
-    global_item_models[9] = global_blue_potion_model;
-    global_item_models[10] = global_blue_potion_model;
+    global_item_models[IT_INGREDIENT1_POWDER] = global_green_stone_model;
+    global_item_models[IT_INGREDIENT2_POWDER] = global_yellow_potion_model;
+    global_item_models[IT_INGREDIENT3_SMALL] = global_red_potion_model;
+    global_item_models[IT_INGREDIENT4_SMALL] = global_red_potion_model;
 
-    global_item_models[11] = global_crystal_model;
+    global_item_models[IT_INGREDIENT_SOLID_3] = global_blue_potion_model;
+
+    global_item_models[IT_GARBAGE] = global_crystal_model;
   }
 
 

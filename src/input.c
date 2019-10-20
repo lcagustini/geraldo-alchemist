@@ -163,7 +163,7 @@ void action_button(Map *map, Player *player) {
       break;
     case DT_SCALE:
       puts("scale");
-      if (!map->scale_list[nearest[DT_SCALE]].item && player->item) {
+      if (!map->scale_list[nearest[DT_SCALE]].item && player->item > IT_BOTTLED_ITEMS) {
         map->scale_list[nearest[DT_SCALE]].item = player->item;
         map->scale_list[nearest[DT_SCALE]].progress = SCALE_SPEED;
 
@@ -188,7 +188,7 @@ void action_button(Map *map, Player *player) {
     case DT_CAULDRON:
       puts("cauldron");
       if (map->cauldron_list[nearest[DT_CAULDRON]].items_size < MAX_INGREDIENTS &&
-          player->item) {
+          player->item > IT_BOTTLED_ITEMS) {
         map->cauldron_list[nearest[DT_CAULDRON]].items[map->cauldron_list[nearest[DT_CAULDRON]].items_size++] = player->item;
         map->cauldron_list[nearest[DT_CAULDRON]].progress = CAULDRON_SPEED;
 
@@ -196,7 +196,7 @@ void action_button(Map *map, Player *player) {
 
         player->current_action = DT_NONE;
       }
-      else if (map->cauldron_list[nearest[DT_CAULDRON]].items_size && !player->item) {
+      else if (map->cauldron_list[nearest[DT_CAULDRON]].items_size && map->cauldron_list[nearest[DT_CAULDRON]].items[0] < IT_BOTTLED_ITEMS && player->item == IT_EMPTY_BOTTLE) {
         player->item = map->cauldron_list[nearest[DT_CAULDRON]].items[--map->cauldron_list[nearest[DT_CAULDRON]].items_size];
 
         player->current_action = DT_NONE;
@@ -204,15 +204,15 @@ void action_button(Map *map, Player *player) {
       break;
     case DT_CENTRIFUGE:
       puts("centrifuge");
-      if (!map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && player->item) {
+      if (!map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && player->item < IT_BOTTLED_ITEMS && player->item != IT_EMPTY_BOTTLE) {
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = player->item;
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].progress = CENTRIFUGE_SPEED;
 
-        player->item = IT_UNINITIALIZED;
+        player->item = IT_EMPTY_BOTTLE;
 
         player->current_action = DT_NONE;
       }
-      else if (map->centrifuge_list[nearest[DT_CENTRIFUGE]].item && !player->item) {
+      else if (!player->item && map->centrifuge_list[nearest[DT_CENTRIFUGE]].item > IT_BOTTLED_ITEMS) {
         player->item = map->centrifuge_list[nearest[DT_CENTRIFUGE]].item;
         map->centrifuge_list[nearest[DT_CENTRIFUGE]].item = IT_UNINITIALIZED;
 
@@ -221,7 +221,7 @@ void action_button(Map *map, Player *player) {
       break;
     case DT_MASHER:
       puts("masher");
-      if (!map->masher_list[nearest[DT_MASHER]].item && player->item) {
+      if (!map->masher_list[nearest[DT_MASHER]].item && player->item > IT_BOTTLED_ITEMS) {
         map->masher_list[nearest[DT_MASHER]].item = player->item;
         map->masher_list[nearest[DT_MASHER]].progress = MASHER_SPEED;
 
@@ -252,12 +252,16 @@ void action_button(Map *map, Player *player) {
     case DT_DELIVERY:
       puts("delivery");
       if (player->item) {
-        player->item = IT_UNINITIALIZED;
+        if (player->item < IT_BOTTLED_ITEMS) player->item = IT_EMPTY_BOTTLE;
+        else player->item = IT_UNINITIALIZED;
       }
       break;
     case DT_TRASHCAN:
       puts("trash");
-      player->item = IT_UNINITIALIZED;
+      if (player->item) {
+        if (player->item < IT_BOTTLED_ITEMS) player->item = IT_EMPTY_BOTTLE;
+        else player->item = IT_UNINITIALIZED;
+      }
       break;
     default:
       printf("%d\n", nearest_id);
