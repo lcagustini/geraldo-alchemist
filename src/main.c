@@ -80,6 +80,7 @@ Model global_trashcan_model;
 Model global_garbage_model;
 
 Model global_flower_model;
+Model global_small_flower_model;
 Model global_mushroom_model;
 
 PotionProcess global_potion_process_list[] = {
@@ -234,6 +235,12 @@ int main(void) {
       LoadTexture("assets/mushroom_text.png"));
   GenTextureMipmaps(&global_mushroom_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_mushroom_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
+  global_small_flower_model = LoadModel("assets/flor.obj");
+  SetMaterialTexture(&global_small_flower_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/flor_text.png"));
+  GenTextureMipmaps(&global_small_flower_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_small_flower_model.transform = MatrixScale(0.1f, 0.1f, 0.1f);
 
   global_flower_model = LoadModel("assets/flor.obj");
   SetMaterialTexture(&global_flower_model.materials[0], MAP_DIFFUSE,
@@ -446,6 +453,7 @@ int main(void) {
   global_blue_powder_model.materials[0].shader = shader;
   global_green_powder_model.materials[0].shader = shader;
   global_flower_model.materials[0].shader = shader;
+  global_small_flower_model.materials[0].shader = shader;
   global_mushroom_model.materials[0].shader = shader;
 
   {
@@ -465,7 +473,7 @@ int main(void) {
     global_item_models[IT_BLUE_CRYSTAL] = global_blue_crystal_model;
     global_item_models[IT_BONE] = global_bone_model;
 
-    global_item_models[IT_SMALL_FLOWER] = global_flower_model;
+    global_item_models[IT_SMALL_FLOWER] = global_small_flower_model;
     global_item_models[IT_RED_POWDER] = global_red_powder_model;
     global_item_models[IT_SMALL_MUSHROOM] = global_mushroom_model;
     global_item_models[IT_BLUE_POWDER] = global_blue_powder_model;
