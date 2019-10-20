@@ -23,12 +23,12 @@
 
 #define MAX_WANTED_ITEMS 8
 
-#define RECIPE_GENERATION_TIMER 0.2f;
+#define RECIPE_GENERATION_TIMER 20.0f;
 
-#define CAULDRON_SPEED 20.0f
-#define CENTRIFUGE_SPEED 20.0f
-#define SCALE_SPEED 5.0f
-#define MASHER_SPEED 5.0f
+#define CAULDRON_SPEED 15.0f
+#define CENTRIFUGE_SPEED 10.0f
+#define SCALE_SPEED 3.0f
+#define MASHER_SPEED 3.0f
 
 #define GET_COUNTER_BBOX(a) (BoundingBox){(Vector3){(a).pos.x - 0.5f, \
                                                     (a).pos.y - 0.5f, \
