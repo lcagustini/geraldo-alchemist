@@ -53,6 +53,7 @@ Model global_red_stone_model;
 Model global_yellow_stone_model;
 Model global_green_stone_model;
 Model global_purple_stone_model;
+Model global_crystal_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
@@ -145,6 +146,12 @@ for_continue: ;
 int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+
+  global_crystal_model = LoadModel("assets/crystal.obj");
+  SetMaterialTexture(&global_crystal_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/crystal_text.png"));
+  GenTextureMipmaps(&global_crystal_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_crystal_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
   global_purple_stone_model = LoadModel("assets/stone.obj");
   SetMaterialTexture(&global_purple_stone_model.materials[0], MAP_DIFFUSE,
@@ -273,6 +280,7 @@ int main(void) {
   global_yellow_stone_model.materials[0].shader = shader;
   global_green_stone_model.materials[0].shader = shader;
   global_purple_stone_model.materials[0].shader = shader;
+  global_crystal_model.materials[0].shader = shader;
 
   {
     global_item_models[0] = global_red_potion_model;
@@ -280,7 +288,7 @@ int main(void) {
     global_item_models[1] = global_purple_stone_model;
     global_item_models[2] = global_yellow_stone_model;
     global_item_models[3] = global_red_stone_model;
-    global_item_models[4] = global_blue_potion_model;
+    global_item_models[4] = global_crystal_model;
 
     global_item_models[5] = global_green_stone_model;
     global_item_models[6] = global_yellow_potion_model;
@@ -290,7 +298,7 @@ int main(void) {
     global_item_models[9] = global_blue_potion_model;
     global_item_models[10] = global_blue_potion_model;
 
-    global_item_models[11] = global_red_potion_model;
+    global_item_models[11] = global_crystal_model;
   }
 
 
