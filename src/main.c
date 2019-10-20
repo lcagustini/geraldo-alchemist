@@ -98,28 +98,7 @@ PotionProcess global_potion_process_list[] = {
 };
 int global_potion_process_list_len;
 
-#if 0
-Color global_item_colors[] = {
-  WHITE,
-
-  GREEN,
-  YELLOW,
-  PURPLE,
-  RED,
-
-  DARKGREEN,
-  GOLD,
-  DARKPURPLE,
-  MAROON,
-
-  PINK,
-  VIOLET,
-
-  BLACK
-};
-#else
 Model global_item_models[IT_MAX];
-#endif
 
 #include "util.c"
 #include "cards.c"
@@ -407,7 +386,6 @@ int main(void) {
 
       if (c.item) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.item]);
         DrawModel(global_item_models[c.item], item_pos, 1.0f, WHITE);
       }
     }
@@ -419,7 +397,6 @@ int main(void) {
       DrawModel(s.item ? s.model_full : s.model_empty, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
         DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
@@ -431,7 +408,6 @@ int main(void) {
       DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
         DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
@@ -443,7 +419,6 @@ int main(void) {
       DrawModel(s.item ? s.model_closed : s.model_open, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
         DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
@@ -454,7 +429,6 @@ int main(void) {
 
       DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-      //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
       DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
     }
 
@@ -480,7 +454,6 @@ int main(void) {
 
       for (int j = 0; j < c.items_size; j++) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.3f+(j*0.3), c.pos.z};
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.items[j]]);
         DrawModel(global_item_models[c.items[j]], item_pos, 1.0f, WHITE);
       }
     }
@@ -488,7 +461,6 @@ int main(void) {
     // draw dropped items
     for (int i = 0; i < map.dropped_item_list_size; i++) {
       DroppedItem item = map.dropped_item_list[i];
-      //DrawCube(item.pos, 0.2f, 0.2f, 0.2f, global_item_colors[item.item]);
       DrawModel(global_item_models[item.item], item.pos, 1.0f, WHITE);
     }
 
@@ -502,7 +474,6 @@ int main(void) {
       if (p.item) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
         item_pos = Vector3Add(item_pos, Vector3Scale(p.dir, 0.6f));
-        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);
         DrawModel(global_item_models[p.item], item_pos, 1.0f, WHITE);
       }
     }
