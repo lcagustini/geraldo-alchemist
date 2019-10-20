@@ -26,9 +26,10 @@ typedef struct {
 
 typedef struct {
   Vector3 pos;
-  Vector3 dir;
+  Vector3 dir; // must be sync'd with model.transform
   Item item;
   float item_pickup_cooldown; // less than 0 = good to go
+  Model model;
 } Player;
 
 typedef struct {

@@ -29,6 +29,7 @@
 #include "data.h"
 
 Model global_counter_model;
+Model global_character_model;
 
 #include "cards.c"
 #include "data.c"
@@ -40,10 +41,14 @@ int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
 
   global_counter_model = LoadModel("assets/balcao.obj"); 
-  //Model global_counter_model = LoadModel("assets/balcao.iqm"); 
   Texture2D texture = LoadTexture("assets/balcao_text.png");
   SetMaterialTexture(&global_counter_model.materials[0], MAP_DIFFUSE, texture);
   GenTextureMipmaps(&global_counter_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_character_model = LoadModel("assets/personagem.obj"); 
+  //Texture2D texture = LoadTexture("assets/balcao_text.png");
+  //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
+  //GenTextureMipmaps(&global_character_model.materials[0].maps[MAP_DIFFUSE].texture);
 
 
   Shader shader = LoadShader("src/lighting.vs", "src/lighting.fs");
@@ -52,6 +57,7 @@ int main(void) {
   int ambientLoc = GetShaderLocation(shader, "ambient");
   SetShaderValue(shader, ambientLoc, (float[4]){ 0.3f, 0.3f, 0.3f, 1.0f }, UNIFORM_VEC4);
   global_counter_model.materials[0].shader = shader;
+  global_character_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -63,7 +69,9 @@ int main(void) {
   init_data(&map, &gui);
 
   map.players[0].pos.x = -1;
+  map.players[0].model = global_character_model;
   map.players[1].pos.x = 1;
+  map.players[1].model = global_character_model;
   map.player_count = 2;
 
   Camera3D camera = { 0 };
@@ -114,8 +122,9 @@ int main(void) {
     for (int i = 0; i < map.player_count; i++) {
       Player p = map.players[i];
 
-      DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
-      DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      //DrawCube(p.pos, 1.0f, 1.0f, 1.0f, MAROON);
+      //DrawCubeWires(p.pos, 1.0f, 1.0f, 1.0f, YELLOW);
+      DrawModel(p.model, p.pos, 0.5f, WHITE);
       if (p.item.type) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
         DrawCube(item_pos, 0.2f, 0.2f, 0.2f, p.item.color);

@@ -120,5 +120,7 @@ void keyboard_input(Map *map, int player_id) {
 
   if (Vector3Length(new_dir)) {
     map->players[player_id].dir = Vector3Normalize(new_dir);
+    float angle = atan2f(-new_dir.z, new_dir.x);
+    map->players[player_id].model.transform = MatrixRotate((Vector3){0,1,0}, angle);
   }
 }
