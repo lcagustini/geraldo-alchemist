@@ -11,6 +11,20 @@ void add_counter(Map *map, float x, float z, Vector3 dir) {
   map->counter_list_size++;
 }
 
+void add_centrifuge(Map *map, float x, float z, Vector3 dir) {
+  map->centrifuge_list[map->centrifuge_list_size].item = IT_UNINITIALIZED;
+  map->centrifuge_list[map->centrifuge_list_size].progress = 5;
+  map->centrifuge_list[map->centrifuge_list_size].pos = (Vector3){ x, 0.0f, z };
+  map->centrifuge_list[map->centrifuge_list_size].dir = dir;
+  map->centrifuge_list[map->centrifuge_list_size].model = global_centrifuge_open_model;
+  float angle = atan2f(-dir.z, dir.x);
+  Matrix rot = MatrixRotate((Vector3){0,1,0}, angle);
+  Vector3 pos = map->centrifuge_list[map->centrifuge_list_size].pos;
+  Matrix tran = MatrixTranslate(pos.x, pos.y, pos.z);
+  map->centrifuge_list[map->centrifuge_list_size].model.transform = MatrixMultiply(rot, tran);
+  map->centrifuge_list_size++;
+}
+
 void add_scale(Map *map, float x, float z, Vector3 dir) {
   map->scale_list[map->scale_list_size].item = IT_UNINITIALIZED;
   map->scale_list[map->scale_list_size].progress = 5;
@@ -77,7 +91,7 @@ void init_data(Map *map, GUI *gui) {
   dir = (Vector3){ 0.0f, 0.0f, -1.0f };
   add_counter(map, -5.0, 3.0, dir);
   add_counter(map, -4.0, 3.0, dir);
-  add_counter(map, -3.0, 3.0, dir);
+  add_centrifuge(map, -3.0, 3.0, dir);
   add_counter(map, -2.0, 3.0, dir);
   add_counter(map, -1.0, 3.0, dir);
   add_scale(map, 0.0, 3.0, dir);

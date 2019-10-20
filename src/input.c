@@ -97,7 +97,7 @@ void action_button(Map *map, Player *player) {
   nearest[DT_SCALE] = get_aimed_scale(player, map, &nearest_dist[DT_SCALE]);
   nearest[DT_CAULDRON] = get_aimed_cauldron(player, map, &nearest_dist[DT_CAULDRON]);
 
-  int nearest_id = minf(nearest_dist, 2);
+  int nearest_id = minf(nearest_dist, 3);
 
   if (nearest_dist[nearest_id] > 0.6f) {
     if (player->item) {
@@ -207,6 +207,7 @@ void action_button(Map *map, Player *player) {
       }
       break;
     default:
+      printf("%d\n", nearest_id);
       assert(false);
   }
 }

@@ -32,6 +32,8 @@ Model global_counter_model;
 Model global_character_model;
 Model global_scale_model;
 Model global_cauldron_model;
+Model global_centrifuge_open_model;
+Model global_centrifuge_closed_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -125,6 +127,16 @@ int main(void) {
     LoadTexture("assets/cauldron_text.png"));
   GenTextureMipmaps(&global_cauldron_model.materials[0].maps[MAP_DIFFUSE].texture);
 
+  global_centrifuge_open_model = LoadModel("assets/centrifuge_open.obj");
+  SetMaterialTexture(&global_centrifuge_open_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/centrifuge_text.png"));
+  GenTextureMipmaps(&global_centrifuge_open_model.materials[0].maps[MAP_DIFFUSE].texture);
+
+  global_centrifuge_closed_model = LoadModel("assets/centrifuge_closed.obj");
+  SetMaterialTexture(&global_centrifuge_closed_model.materials[0], MAP_DIFFUSE,
+    LoadTexture("assets/centrifuge_text.png"));
+  GenTextureMipmaps(&global_centrifuge_closed_model.materials[0].maps[MAP_DIFFUSE].texture);
+
   global_character_model = LoadModel("assets/personagem.obj");
   //Texture2D texture = LoadTexture("assets/balcao_text.png");
   //SetMaterialTexture(&global_character_model.materials[0], MAP_DIFFUSE, texture);
@@ -138,7 +150,10 @@ int main(void) {
 
   global_counter_model.materials[0].shader = shader;
   global_scale_model.materials[0].shader = shader;
+  global_cauldron_model.materials[0].shader = shader;
   global_character_model.materials[0].shader = shader;
+  global_centrifuge_open_model.materials[0].shader = shader;
+  global_centrifuge_closed_model.materials[0].shader = shader;
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -202,6 +217,23 @@ int main(void) {
         default:
           break;
       }
+
+      for (int i = 0; i < map.centrifuge_list_size; i++) {
+      }
+
+      for (int i = 0; i < map.cauldron_list_size; i++) {
+        if (map.cauldron_list[i].progress > 0) {
+          map.cauldron_list[i].progress -= GetFrameTime();
+        }
+        else {
+          map.cauldron_list[i].items[0] =
+            get_recipe_result(map.cauldron_list[i].items,
+                map.cauldron_list[i].items_size,
+                DT_CAULDRON);
+          map.cauldron_list[i].items_size = 1;
+          map.cauldron_list[i].progress = 5.0f;
+        }
+      }
     }
 
     // draw counters
@@ -219,6 +251,17 @@ int main(void) {
     // draw scales
     for (int i = 0; i < map.scale_list_size; i++) {
       Scale s = map.scale_list[i];
+
+      DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
+      if (s.item) {
+        Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
+        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+      }
+    }
+
+    // draw centrifuges
+    for (int i = 0; i < map.centrifuge_list_size; i++) {
+      Centrifuge s = map.centrifuge_list[i];
 
       DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {

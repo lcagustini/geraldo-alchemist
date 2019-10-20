@@ -28,10 +28,8 @@ typedef enum {
   DT_COUNTER,
 
   DT_SCALE,
-  DT_MASHER,
-
   DT_CAULDRON,
-
+  DT_MASHER,
   DT_BOTTLE,
   DT_CENTRIFUGE,
 
@@ -65,6 +63,14 @@ typedef struct {
   ItemType item;
   float progress;
   Model model;
+} Centrifuge;
+
+typedef struct {
+  Vector3 pos;
+  Vector3 dir;
+  ItemType item;
+  float progress;
+  Model model;
 } Scale;
 
 typedef struct {
@@ -89,6 +95,9 @@ typedef struct {
 } Player;
 
 typedef struct {
+  Centrifuge centrifuge_list[MAX_DEVICES];
+  int centrifuge_list_size;
+
   Cauldron cauldron_list[MAX_DEVICES];
   int cauldron_list_size;
 
