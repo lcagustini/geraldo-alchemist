@@ -46,6 +46,7 @@ Model global_cauldron_model;
 Model global_centrifuge_open_model;
 Model global_centrifuge_closed_model;
 Model global_masher_model;
+Model global_red_potion_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -87,6 +88,7 @@ PotionProcess global_potion_process_list[] = {
 };
 int global_potion_process_list_len;
 
+#if 0
 Color global_item_colors[] = {
   WHITE,
 
@@ -105,6 +107,9 @@ Color global_item_colors[] = {
 
   BLACK
 };
+#else
+Model global_item_models[IT_MAX];
+#endif
 
 #include "util.c"
 #include "cards.c"
@@ -131,6 +136,12 @@ for_continue: ;
 int main(void) {
   SetConfigFlags(FLAG_MSAA_4X_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "geraldo alchemist");
+
+  global_red_potion_model = LoadModel("assets/pocao_vermelha.obj");
+  SetMaterialTexture(&global_red_potion_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/pocao_vermelha_text.png"));
+  GenTextureMipmaps(&global_red_potion_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_red_potion_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
   global_scale_empty_model = LoadModel("assets/scale_empty.obj");
   SetMaterialTexture(&global_scale_empty_model.materials[0], MAP_DIFFUSE,
@@ -192,6 +203,27 @@ int main(void) {
   global_centrifuge_closed_model.materials[0].shader = shader;
   global_masher_model.materials[0].shader = shader;
   floor_model.materials[0].shader = shader;
+  global_red_potion_model.materials[0].shader = shader;
+
+  {
+    global_item_models[0] = global_red_potion_model;
+
+    global_item_models[1] = global_red_potion_model;
+    global_item_models[2] = global_red_potion_model;
+    global_item_models[3] = global_red_potion_model;
+    global_item_models[4] = global_red_potion_model;
+
+    global_item_models[5] = global_red_potion_model;
+    global_item_models[6] = global_red_potion_model;
+    global_item_models[7] = global_red_potion_model;
+    global_item_models[8] = global_red_potion_model;
+
+    global_item_models[9] = global_red_potion_model;
+    global_item_models[10] = global_red_potion_model;
+
+    global_item_models[11] = global_red_potion_model;
+  }
+
 
   CreateLight(LIGHT_DIRECTIONAL, (Vector3){ 3.0f, 20.0f, 7 }, (Vector3){ 0.0f, 0.0f, 0.0f }, (Color){ 255, 255, 255, 255 }, shader);
 
@@ -295,7 +327,8 @@ int main(void) {
 
       if (c.item) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.1f, c.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.item]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.item]);
+        DrawModel(global_item_models[c.item], item_pos, 1.0f, WHITE);
       }
     }
 
@@ -306,7 +339,8 @@ int main(void) {
       DrawModel(s.item ? s.model_full : s.model_empty, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
 
@@ -317,7 +351,8 @@ int main(void) {
       DrawModel(s.model, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
 
@@ -328,7 +363,8 @@ int main(void) {
       DrawModel(s.item ? s.model_closed : s.model_open, Vector3Zero(), 1.0f, WHITE);
       if (s.item) {
         Vector3 item_pos = {s.pos.x, s.pos.y+1.3f, s.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[s.item]);
+        DrawModel(global_item_models[s.item], item_pos, 1.0f, WHITE);
       }
     }
 
@@ -340,14 +376,16 @@ int main(void) {
 
       for (int j = 0; j < c.items_size; j++) {
         Vector3 item_pos = {c.pos.x, c.pos.y+1.3f+(j*0.3), c.pos.z};
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.items[j]]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[c.items[j]]);
+        DrawModel(global_item_models[c.items[j]], item_pos, 1.0f, WHITE);
       }
     }
 
     // draw dropped items
     for (int i = 0; i < map.dropped_item_list_size; i++) {
       DroppedItem item = map.dropped_item_list[i];
-      DrawCube(item.pos, 0.2f, 0.2f, 0.2f, global_item_colors[item.item]);
+      //DrawCube(item.pos, 0.2f, 0.2f, 0.2f, global_item_colors[item.item]);
+      DrawModel(global_item_models[item.item], item.pos, 1.0f, WHITE);
     }
 
     // draw players
@@ -360,7 +398,8 @@ int main(void) {
       if (p.item) {
         Vector3 item_pos = {p.pos.x, p.pos.y+0.6f, p.pos.z};
         item_pos = Vector3Add(item_pos, Vector3Scale(p.dir, 0.6f));
-        DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);
+        //DrawCube(item_pos, 0.2f, 0.2f, 0.2f, global_item_colors[p.item]);
+        DrawModel(global_item_models[p.item], item_pos, 1.0f, WHITE);
       }
     }
 
