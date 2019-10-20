@@ -73,7 +73,9 @@ typedef struct {
   Vector3 dir;
   ItemType item;
   float progress;
-  Model model;
+
+  Model model_full;
+  Model model_empty;
 } Scale;
 
 typedef struct {
