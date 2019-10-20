@@ -60,6 +60,7 @@ Model global_yellow_stone_model;
 Model global_green_stone_model;
 Model global_purple_stone_model;
 Model global_crystal_model;
+Model global_bone_model;
 Model global_chest_model;
 Model global_delivery_model;
 Model global_trashcan_model;
@@ -217,6 +218,12 @@ int main(void) {
   GenTextureMipmaps(&global_flower_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_flower_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
+  global_bone_model = LoadModel("assets/osso.obj");
+  //SetMaterialTexture(&global_bone_model.materials[0], MAP_DIFFUSE,
+      //LoadTexture("assets/bone_text.png"));
+  //GenTextureMipmaps(&global_bone_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_bone_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
+
   global_crystal_model = LoadModel("assets/crystal.obj");
   SetMaterialTexture(&global_crystal_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/crystal_text.png"));
@@ -351,6 +358,7 @@ int main(void) {
   global_green_stone_model.materials[0].shader = shader;
   global_purple_stone_model.materials[0].shader = shader;
   global_crystal_model.materials[0].shader = shader;
+  global_bone_model.materials[0].shader = shader;
   global_flower_model.materials[0].shader = shader;
 
   {
@@ -370,7 +378,7 @@ int main(void) {
     global_item_models[IT_RED_ROCK] = global_crystal_model;
     global_item_models[IT_MUSHROOM] = global_crystal_model;
     global_item_models[IT_BLUE_CRYSTAL] = global_crystal_model;
-    global_item_models[IT_BONE] = global_crystal_model;
+    global_item_models[IT_BONE] = global_bone_model;
 
     global_item_models[IT_SMALL_FLOWER] = global_crystal_model;
     global_item_models[IT_RED_POWDER] = global_crystal_model;
@@ -391,6 +399,8 @@ int main(void) {
   {
     global_item_icons[IT_FLOWER] = LoadTexture("assets/flor.png");
     global_item_icons_scale[IT_FLOWER] = 0.05f;
+    global_item_icons[IT_BONE] = LoadTexture("assets/osso.png");
+    global_item_icons_scale[IT_BONE] = 0.05f;
     global_item_icons[IT_SMALL_FLOWER] = LoadTexture("assets/flor.png");
     global_item_icons_scale[IT_SMALL_FLOWER] = 0.05f;
   }
@@ -411,7 +421,7 @@ int main(void) {
 
   global_available_recipes_count = 0;
   add_available_recipes(IT_SMALL_FLOWER);
-  add_available_recipes(IT_RED_POWDER);
+  add_available_recipes(IT_WHITE_POWDER);
 
   Camera3D camera = { 0 };
   camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
@@ -621,7 +631,12 @@ int main(void) {
           INGREDIENT_CARD_SIZE, INGREDIENT_CARD_SIZE
         };
         DrawRectangleRec(ingredient, WHITE);
-        DrawRectangleLines(ingredient.x, ingredient.y, ingredient.width, ingredient.height, BLACK);
+        ItemType ingredient_type = gui.cards[i].ingredient_list[j];
+        //printf("ingredient_Type %d\n", ingredient_type);
+        float testf = (float) ((float)INGREDIENT_CARD_SIZE - (global_item_icons[ingredient_type].width * global_item_icons_scale[ingredient_type])) / 2.0f;
+        Vector2 item_sloc = {ingredient.x + testf, ingredient.y};
+        DrawTextureEx(global_item_icons[ingredient_type], item_sloc, 0.0f, global_item_icons_scale[ingredient_type], WHITE);
+        //DrawRectangleLines(ingredient.x, ingredient.y, ingredient.width, ingredient.height, BLACK);
       }
     }
 

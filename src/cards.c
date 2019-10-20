@@ -76,7 +76,7 @@ void generate_recipe(GUI *gui) {
   int ingredient_list_len = -1;
   for (int i = 0; global_potion_process_list_len; i++) {
     if (global_potion_process_list[i].after == recipe) {
-      memcpy(ingredient_list, global_potion_process_list[i].before, global_potion_process_list[i].before_len);
+      memcpy(ingredient_list, global_potion_process_list[i].before, global_potion_process_list[i].before_len * sizeof(ItemType));
       ingredient_list_len = global_potion_process_list[i].before_len;
       break;
     }
