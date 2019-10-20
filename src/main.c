@@ -47,6 +47,8 @@ Model global_centrifuge_open_model;
 Model global_centrifuge_closed_model;
 Model global_masher_model;
 Model global_red_potion_model;
+Model global_blue_potion_model;
+Model global_yellow_potion_model;
 
 PotionProcess global_potion_process_list[] = {
   {
@@ -143,6 +145,18 @@ int main(void) {
   GenTextureMipmaps(&global_red_potion_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_red_potion_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
 
+  global_blue_potion_model = LoadModel("assets/blue_potion.obj");
+  SetMaterialTexture(&global_blue_potion_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/blue_potion_text.png"));
+  GenTextureMipmaps(&global_blue_potion_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_blue_potion_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
+  global_yellow_potion_model = LoadModel("assets/yellow_potion.obj");
+  SetMaterialTexture(&global_yellow_potion_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/yellow_potion_text.png"));
+  GenTextureMipmaps(&global_yellow_potion_model.materials[0].maps[MAP_DIFFUSE].texture);
+  global_yellow_potion_model.transform = MatrixScale(0.4f, 0.4f, 0.4f);
+
   global_scale_empty_model = LoadModel("assets/scale_empty.obj");
   SetMaterialTexture(&global_scale_empty_model.materials[0], MAP_DIFFUSE,
       LoadTexture("assets/scale_empty_text.png"));
@@ -204,17 +218,19 @@ int main(void) {
   global_masher_model.materials[0].shader = shader;
   floor_model.materials[0].shader = shader;
   global_red_potion_model.materials[0].shader = shader;
+  global_blue_potion_model.materials[0].shader = shader;
+  global_yellow_potion_model.materials[0].shader = shader;
 
   {
     global_item_models[0] = global_red_potion_model;
 
-    global_item_models[1] = global_red_potion_model;
-    global_item_models[2] = global_red_potion_model;
+    global_item_models[1] = global_blue_potion_model;
+    global_item_models[2] = global_yellow_potion_model;
     global_item_models[3] = global_red_potion_model;
     global_item_models[4] = global_red_potion_model;
 
-    global_item_models[5] = global_red_potion_model;
-    global_item_models[6] = global_red_potion_model;
+    global_item_models[5] = global_blue_potion_model;
+    global_item_models[6] = global_yellow_potion_model;
     global_item_models[7] = global_red_potion_model;
     global_item_models[8] = global_red_potion_model;
 
