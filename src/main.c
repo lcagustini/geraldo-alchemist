@@ -242,21 +242,21 @@ int main(void) {
   global_flower_model.transform = MatrixScale(0.15f, 0.15f, 0.15f);
 
   global_green_powder_model = LoadModel("assets/pozinho.obj");
-  //SetMaterialTexture(&global_green_powder_model.materials[0], MAP_DIFFUSE,
-      //LoadTexture("assets/po_verde_text.png"));
-  //GenTextureMipmaps(&global_green_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  SetMaterialTexture(&global_green_powder_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/po_verde_text.png"));
+  GenTextureMipmaps(&global_green_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_green_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
   global_red_powder_model = LoadModel("assets/pozinho.obj");
-  //SetMaterialTexture(&global_red_powder_model.materials[0], MAP_DIFFUSE,
-      //LoadTexture("assets/po_vermelho_text.png"));
-  //GenTextureMipmaps(&global_red_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  SetMaterialTexture(&global_red_powder_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/po_vermelho_text.png"));
+  GenTextureMipmaps(&global_red_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_red_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
   global_blue_powder_model = LoadModel("assets/pozinho.obj");
-  //SetMaterialTexture(&global_blue_powder_model.materials[0], MAP_DIFFUSE,
-      //LoadTexture("assets/po_azul_text.png"));
-  //GenTextureMipmaps(&global_blue_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
+  SetMaterialTexture(&global_blue_powder_model.materials[0], MAP_DIFFUSE,
+      LoadTexture("assets/po_azul_text.png"));
+  GenTextureMipmaps(&global_blue_powder_model.materials[0].maps[MAP_DIFFUSE].texture);
   global_blue_powder_model.transform = MatrixScale(0.2f, 0.2f, 0.2f);
 
   global_white_powder_model = LoadModel("assets/pozinho.obj");
